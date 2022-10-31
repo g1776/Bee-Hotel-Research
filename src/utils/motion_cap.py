@@ -2,10 +2,9 @@ import datetime
 from typing import Tuple, Union
 import cv2
 import numpy as np
-from motion_cap_helpers import init_logging_session, log_it, generate_log_message
-from pytesseract import pytesseract
+from .motion_cap_helpers import init_logging_session, log_it, generate_log_message
 
-from text_detect import text_detect
+from src.utils.text_detect import text_detect
 
 
 def motion_detector(

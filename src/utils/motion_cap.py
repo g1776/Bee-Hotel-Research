@@ -2,8 +2,7 @@ import datetime
 from typing import Tuple, Union
 import cv2
 import numpy as np
-from .motion_cap_helpers import init_logging_session, log_it, generate_log_message
-from .individual_detect import find_closest_circle
+from .motion_cap_helpers import *
 
 from src.utils.text_detect import text_detect
 
@@ -58,6 +57,11 @@ def motion_detector(
 
     while True:
 
+        # ignore the first 30 frames to allow the camera to adjust to the environment
+        if frame_count < 30:
+            frame_count += 1
+            continue
+
         # read image and convert to rgb
         success, frame = cap.read()
         if not success:
@@ -83,8 +87,8 @@ def motion_detector(
         gray = cv2.cvtColor(rgb, cv2.COLOR_BGR2GRAY)
         blurred = cv2.GaussianBlur(src=gray, ksize=(5, 5), sigmaX=0)
 
-        # detect circles on first frame
-        if frame_count == 0:
+        # wait 30 frames before detecting circles, in case it takes a couple seconds for the camera to focus
+        if frame_count == 30:
             circles = cv2.HoughCircles(
                 image=blurred,
                 method=cv2.HOUGH_GRADIENT,
@@ -97,6 +101,14 @@ def motion_detector(
             )
 
             circles = np.around(circles).astype(int)[0]
+            tube_hives_msg = "Coordinates of Tube Hives detected, along with associated Bee ID:\n"
+            tube_hives_msg += "\n".join(
+                [f"Bee ID={i} Tube Hive Coords: {circle[:2]}" for i, circle in enumerate(circles)]
+            )
+            tube_hives_msg += "\n\n"
+            print(tube_hives_msg)
+            if log:
+                log_it(log, tube_hives_msg)
 
         # determine motion on every motion_n-th frame
         frame_count += 1
@@ -152,11 +164,12 @@ def motion_detector(
                     )
 
                     # calculate middle of contour
-                    middle = ((x + w) // 2, (y + h) // 2)
+                    middle = get_contour_center(contour)
 
                     # find the closest circle to the detected motion.
                     # we identify bees with which circle it was closest to, hence bee_id
-                    closest_circle, bee_id = find_closest_circle(circles, middle)
+                    bee_id = find_closest_circle(circles, middle)
+                    closest_circle = circles[bee_id]
 
                     # draw circle around closest circle
                     if closest_circle is not None:

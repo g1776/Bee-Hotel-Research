@@ -1,8 +1,9 @@
 import datetime
-from typing import Tuple, Union
+from typing import List, Tuple, Union
 import cv2
 import numpy as np
 from .motion_cap_helpers import *
+from .logging import *
 
 from src.utils.text_detect import text_detect
 
@@ -34,7 +35,8 @@ def motion_detector(
         show (bool, optional): Whether to show the video. Defaults to True.
 
     """
-    # based on https://towardsdatascience.com/image-analysis-for-beginners-creating-a-motion-detector-with-opencv-4ca6faba4b42
+
+    # region init
 
     print(
         f"--- Motion detection session started at {datetime.datetime.now()} for file {video} ---"
@@ -46,14 +48,24 @@ def motion_detector(
     cap = cv2.VideoCapture(video)
 
     if motion_granularity is None:
-        FPS = cap.get(cv2.CAP_PROP_FPS)
-        motion_granularity = int(FPS)
+        motion_granularity = int(cap.get(cv2.CAP_PROP_FPS))
 
     TOTAL_FRAMES = cap.get(cv2.CAP_PROP_FRAME_COUNT)
     frame_count = 0
     previous_frame = None
     last_motion_frame = -1
-    circles = []
+    tube_hives = []
+
+    CONTOURS_WINDOW_SIZE = 5  # the number of frames to check no contours for
+
+    # contours window is a list of contours information for the last CONTOURS_WINDOW_SIZE+1 frames
+    # each element is a list of the contour information that happened in the associated frame.
+    # Each contour information is a dictionary of {bee_id, frame, bb}. (bb = bounding box)
+    # The last element in the list is the most recent frame.
+    # The first element is the oldest frame, being CONTOURS_WINDOW_SIZE frames ago.
+    contours_window: List[List[dict]] = []
+
+    # endregion
 
     while True:
 
@@ -61,6 +73,8 @@ def motion_detector(
         if frame_count < 30:
             frame_count += 1
             continue
+
+        # region process_frame
 
         # read image and convert to rgb
         success, frame = cap.read()
@@ -83,36 +97,20 @@ def motion_detector(
                 thickness=-1,
             )
 
-        # process image
         gray = cv2.cvtColor(rgb, cv2.COLOR_BGR2GRAY)
         blurred = cv2.GaussianBlur(src=gray, ksize=(5, 5), sigmaX=0)
 
+        # endregion
+
         # wait 30 frames before detecting circles, in case it takes a couple seconds for the camera to focus
         if frame_count == 30:
-            circles = cv2.HoughCircles(
-                image=blurred,
-                method=cv2.HOUGH_GRADIENT,
-                dp=1,
-                minDist=50,
-                param1=50,
-                param2=30,
-                minRadius=5,
-                maxRadius=60,
-            )
-
-            circles = np.around(circles).astype(int)[0]
-            tube_hives_msg = "Coordinates of Tube Hives detected, along with associated Bee ID:\n"
-            tube_hives_msg += "\n".join(
-                [f"Bee ID={i} Tube Hive Coords: {circle[:2]}" for i, circle in enumerate(circles)]
-            )
-            tube_hives_msg += "\n\n"
-            print(tube_hives_msg)
-            if log:
-                log_it(log, tube_hives_msg)
+            tube_hives = get_tube_hives_coords(blurred, log)
 
         # determine motion on every motion_n-th frame
         frame_count += 1
         if (frame_count % detection_rate) == 0:
+
+            # region detect_motion
 
             # 3. Set previous frame and continue if there is None
             if previous_frame is None:
@@ -138,48 +136,66 @@ def motion_detector(
                 image=thresh_frame, mode=cv2.RETR_EXTERNAL, method=cv2.CHAIN_APPROX_SIMPLE
             )
 
+            # endregion
+
+            # filter out contours that are too small or too large
+            contours_to_check = [
+                c for c in contours if min_contour_area < cv2.contourArea(c) < max_contour_area
+            ]
+
+            # initialize the contour window entry
+            contour_window_entry: List[dict] = []
+
             motion_to_log = False
-            for contour in contours:
+            for contour in contours_to_check:
 
-                # If a contour is big enough, it's motion
-                if (min_contour_area < cv2.contourArea(contour)) and (
-                    max_contour_area > cv2.contourArea(contour)
-                ):
+                # # only log motion if there hasn't been any motion in the last "motion_granularity" frames
+                # if frame_count - last_motion_frame > motion_granularity:
+                #     motion_to_log = True
 
-                    # only log motion if there hasn't been any motion in the last "motion_granularity" frames
-                    if frame_count - last_motion_frame > motion_granularity:
-                        motion_to_log = True
+                # update last motion detection timestamp
+                last_motion_frame = frame_count
 
-                    # update last motion detection timestamp
-                    last_motion_frame = frame_count
+                # draw rectangle around contour
+                (x, y, w, h) = cv2.boundingRect(contour)
+                cv2.rectangle(
+                    img=to_display,
+                    pt1=(x, y),
+                    pt2=(x + w, y + h),
+                    color=(0, 255, 0),
+                    thickness=2,
+                )
 
-                    # draw rectangle around contour
-                    (x, y, w, h) = cv2.boundingRect(contour)
-                    cv2.rectangle(
+                # calculate middle of contour
+                middle = get_contour_center(contour)
+
+                # find the closest circle to the detected motion.
+                # we associate a bee with its closest circle open disappearing, hence bee_id
+                bee_id = find_closest_circle(tube_hives, middle)
+                closest_circle = tube_hives[bee_id]
+
+                # draw circle around closest circle
+                if closest_circle is not None:
+                    cv2.circle(
                         img=to_display,
-                        pt1=(x, y),
-                        pt2=(x + w, y + h),
-                        color=(0, 255, 0),
+                        center=(closest_circle[0], closest_circle[1]),
+                        radius=30,
+                        color=(0, 0, 255),
                         thickness=2,
                     )
 
-                    # calculate middle of contour
-                    middle = get_contour_center(contour)
+                contour_window_entry.append(
+                    {
+                        "frame": frame_count,
+                        "bb": (x, y, w, h),
+                        "bee_id": bee_id,
+                    }
+                )
 
-                    # find the closest circle to the detected motion.
-                    # we identify bees with which circle it was closest to, hence bee_id
-                    bee_id = find_closest_circle(circles, middle)
-                    closest_circle = circles[bee_id]
-
-                    # draw circle around closest circle
-                    if closest_circle is not None:
-                        cv2.circle(
-                            img=to_display,
-                            center=(closest_circle[0], closest_circle[1]),
-                            radius=30,
-                            color=(0, 0, 255),
-                            thickness=2,
-                        )
+            # add to contours window, maintaining window size
+            if len(contours_window) == CONTOURS_WINDOW_SIZE + 1:
+                contours_window.pop(0)
+            contours_window.append(contour_window_entry)
 
             # log motion if we have a contour in motion and "motion_granularity" frames has passed since last motion
             if motion_to_log:

@@ -2,8 +2,10 @@ import argparse
 from src.utils.motion_cap import motion_detector
 from colorama import init
 from termcolor import colored
-from src.constants import PYTESSERACT_EXE
 import pytesseract
+from dotenv import load_dotenv
+from types import SimpleNamespace
+import os
 
 
 def startup_message():
@@ -53,13 +55,31 @@ if __name__ == "__main__":
         help="Run headless (don't show the video while processing)",
         action=argparse.BooleanOptionalAction,
     )
+    parser.add_argument(
+        "--tesseract",
+        help="Path to tesseract executable. Default is 'tesseract'",
+        default=r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+    )
+    parser.add_argument(
+        "--config",
+        "-c",
+        help="Path to .env file. Default is .env",
+        default=".env",
+    )
     args = parser.parse_args()
 
-    validate_args(args)
+    # either use the commandline args or the .env file
+    if args.config:
+        load_dotenv(args.config)
+        args = SimpleNamespace(
+            **{k: os.getenv(k.upper()) or vars(args)[k] for k in vars(args).keys()}
+        )
+    else:
+        validate_args(args)
 
     startup_message()
 
-    pytesseract.pytesseract.tesseract_cmd = PYTESSERACT_EXE
+    pytesseract.pytesseract.tesseract_cmd = args.tesseract
 
     motion_detector(
         args.video,

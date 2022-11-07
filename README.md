@@ -28,7 +28,24 @@ For more information on the commandline arguments, run:
 
 To quit the running program, press `q`, or kill the terminal running the program.
 
+### Alternative Usage: Config File (Recommended)
+
+The `src.main.py` file can also be used with a config file. This is the recommended usage. The config file is a .env file that contains values for the commandline arguments. The config file is specified with the `--config` argument. For example:
+
+```bash
+  python -m src.main --config .env
+```
+
+The config file can be modified to change the commandline arguments. For example, to change the video file, change the `VIDEO` variable in the `.env` file.
+
 ## Methods
+
+### Individual Bee Identification (IBI)
+
+The concept behind individual bee identification (IBI) is based on the fact that solitary bees will claim a tube in the bee hotel. This means that the bee will return to the same tube every time it visits the bee hotel. This is a useful property because it allows us to identify individual bees. The IBI method is based on the following steps:
+
+1. For each motion capture in the video, if the is not any more motion detected in that area of pixels (with a padding of 5 pixels) for 5 frames, then the bee is considered to havebe out of frame, and thus may have entered a tube.
+2. After identifying that a bee has entered a tube, we must determine which tube it has entered. This is done by determining the closest tube to the bee's centroid. The closest tube is determined by the euclidean distance between the bee's centroid and the tube's centroid. Each tube is assigned a number, which in turn will be the bee's ID.
 
 ### Motion capture
 

@@ -3,6 +3,24 @@ from typing import List, Tuple
 from math import dist
 import numpy as np
 from .logging import log_it
+from collections import namedtuple
+
+RECT_NAMEDTUPLE = namedtuple("RECT_NAMEDTUPLE", "x1 x2 y1 y2")
+
+
+def overlap(rec1, rec2):
+    if (rec2.x2 > rec1.x1 and rec2.x2 < rec1.x2) or (rec2.x1 > rec1.x1 and rec2.x1 < rec1.x2):
+        x_match = True
+    else:
+        x_match = False
+    if (rec2.y2 > rec1.y1 and rec2.y2 < rec1.y2) or (rec2.y1 > rec1.y1 and rec2.y1 < rec1.y2):
+        y_match = True
+    else:
+        y_match = False
+    if x_match and y_match:
+        return True
+    else:
+        return False
 
 
 def get_tube_hives_coords(frame, log=None) -> np.ndarray:
@@ -61,4 +79,39 @@ def find_closest_circle(circles, point):
 
 
 def process_contours_window(contours_window: List[List[dict]]) -> List[dict]:
-    pass
+    if len(contours_window) == 0:
+        return []
+
+    detected_bees_info = []
+
+    last_frame = contours_window[-1]
+    for contour_info in last_frame:
+        overlap_found = False
+        for older_frame in contours_window[: len(contours_window) - 1]:
+
+            # if we found an overlap, we don''t need to keep checking this contour against old frames
+            if overlap_found:
+                break
+
+            for older_contour_info in older_frame:
+                if overlap(
+                    RECT_NAMEDTUPLE(
+                        contour_info["bb"][0],
+                        contour_info["bb"][0] + contour_info["bb"][2],
+                        contour_info["bb"][1],
+                        contour_info["bb"][1] + contour_info["bb"][3],
+                    ),
+                    RECT_NAMEDTUPLE(
+                        older_contour_info["bb"][0],
+                        older_contour_info["bb"][0] + older_contour_info["bb"][2],
+                        older_contour_info["bb"][1],
+                        older_contour_info["bb"][1] + older_contour_info["bb"][3],
+                    ),
+                ):
+                    overlap_found = True
+                    break
+
+        if not overlap_found:
+            detected_bees_info.append(contour_info)
+
+    return detected_bees_info

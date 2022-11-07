@@ -53,10 +53,9 @@ def motion_detector(
     TOTAL_FRAMES = cap.get(cv2.CAP_PROP_FRAME_COUNT)
     frame_count = 0
     previous_frame = None
-    last_motion_frame = -1
     tube_hives = []
 
-    CONTOURS_WINDOW_SIZE = 5  # the number of frames to check no contours for
+    CONTOURS_WINDOW_SIZE = 10  # the number of frames to check no contours for
 
     # contours window is a list of contours information for the last CONTOURS_WINDOW_SIZE+1 frames
     # each element is a list of the contour information that happened in the associated frame.
@@ -73,6 +72,17 @@ def motion_detector(
         if frame_count < 30:
             frame_count += 1
             continue
+
+        # log detected bee based on the processed contours window
+        # This will happen CONTOURS_WINDOW_SIZE frames after the last time a bee was detected, since it needs to compare this many frames
+        # the logging itself, however, will have the correct frame number of when the bee was detected
+        contour_window_results = process_contours_window(contours_window)
+        if contour_window_results != []:
+
+            log_msg = generate_log_message(frame_count, TOTAL_FRAMES, timestamp, bee_id)
+            print(log_msg)
+            if log:
+                log_it(log, log_msg)
 
         # region process_frame
 
@@ -146,15 +156,7 @@ def motion_detector(
             # initialize the contour window entry
             contour_window_entry: List[dict] = []
 
-            motion_to_log = False
             for contour in contours_to_check:
-
-                # # only log motion if there hasn't been any motion in the last "motion_granularity" frames
-                # if frame_count - last_motion_frame > motion_granularity:
-                #     motion_to_log = True
-
-                # update last motion detection timestamp
-                last_motion_frame = frame_count
 
                 # draw rectangle around contour
                 (x, y, w, h) = cv2.boundingRect(contour)
@@ -184,11 +186,19 @@ def motion_detector(
                         thickness=2,
                     )
 
+                timestamp = text_detect(
+                    frame[
+                        timestamp_rect[1] : timestamp_rect[3],
+                        timestamp_rect[0] : timestamp_rect[2],
+                    ]
+                )
+
                 contour_window_entry.append(
                     {
                         "frame": frame_count,
                         "bb": (x, y, w, h),
                         "bee_id": bee_id,
+                        "timestamp": timestamp,
                     }
                 )
 
@@ -196,20 +206,6 @@ def motion_detector(
             if len(contours_window) == CONTOURS_WINDOW_SIZE + 1:
                 contours_window.pop(0)
             contours_window.append(contour_window_entry)
-
-            # log motion if we have a contour in motion and "motion_granularity" frames has passed since last motion
-            if motion_to_log:
-
-                timestamp = text_detect(
-                    frame[
-                        timestamp_rect[1] : timestamp_rect[3],
-                        timestamp_rect[0] : timestamp_rect[2],
-                    ]
-                )
-                log_msg = generate_log_message(frame_count, TOTAL_FRAMES, timestamp, bee_id)
-                print(log_msg)
-                if log:
-                    log_it(log, log_msg)
 
         # show image
         if show:

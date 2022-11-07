@@ -149,9 +149,9 @@ def motion_detector(
             motion_to_log = False
             for contour in contours_to_check:
 
-                # # only log motion if there hasn't been any motion in the last "motion_granularity" frames
-                # if frame_count - last_motion_frame > motion_granularity:
-                #     motion_to_log = True
+                # only log motion if there hasn't been any motion in the last "motion_granularity" frames
+                if frame_count - last_motion_frame > motion_granularity:
+                    motion_to_log = True
 
                 # update last motion detection timestamp
                 last_motion_frame = frame_count

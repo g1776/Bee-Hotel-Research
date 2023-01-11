@@ -14,7 +14,7 @@ def motion_detector(
     timestamp_rect: Union[Tuple[float, float, float, float], None] = None,
     detection_rate: int = 2,
     motion_threshold: float = 10,
-    min_contour_area: float = 200,
+    min_contour_area: float = 400,
     max_contour_area: float = 1000,
     log: str | None = None,
     motion_granularity: int = None,
@@ -116,7 +116,7 @@ def motion_detector(
         if frame_count == 30:
             tube_hives = get_tube_hives_coords(blurred, log)
 
-        # determine motion on every motion_n-th frame
+        # determine motion on every detection_rate-th frame
         frame_count += 1
         if (frame_count % detection_rate) == 0:
 

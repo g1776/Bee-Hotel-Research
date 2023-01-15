@@ -1,6 +1,7 @@
 import pandas as pd
 from utils import load_log
 import sys
+from pprint import pprint
 
 
 def timestamp_to_seconds(timestamp: str) -> float:
@@ -83,10 +84,20 @@ def measure_IBI(
                 # add the bee ID to the captured bee ID counts.
                 # If check_id is False, the bee ID can be assumed the same for both the ground truth and captured events
                 if check_id:
-                    captured_bee_id_counts[f"GT: {row['Bee ID']}, CAP: {row2['bee_id']}"] += 1
+                    key = str(row["Bee ID"])
                 else:
-                    captured_bee_id_counts[f"{row2['bee_id']}"] += 1
+                    key = f"GT: {row['Bee ID']}, CAP: {row2['bee_id']}"
+
+                if key in captured_bee_id_counts:
+                    captured_bee_id_counts[key] += 1
+                else:
+                    captured_bee_id_counts[key] = 1
+
                 break
+
+    # print the captured bee ID counts, sorted by the number of times they were captured, descending
+    print("\n# of events matched for each Bee ID (or combo of Bee IDs if check_id=False):")
+    pprint(dict(sorted(captured_bee_id_counts.items(), key=lambda x: x[1], reverse=True)))
 
     # worst 0, best 1
     return score / len(ground_truth)
@@ -99,4 +110,4 @@ if __name__ == "__main__":
 
     # measure the accuracy of the captured data
     score = measure_IBI(captured, ground_truth)
-    print(f"Score: {score}")
+    print(f"---\nScore: {score}")

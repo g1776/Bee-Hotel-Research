@@ -1,0 +1,5 @@
+Bee ID,Start Timestamp,End Timestamp,Event Type
+30,12:00:00,12:00:03,Enter
+30,12:00:05,12:00:05,Exit
+2,12:30:15,12:31:02,Work
+3,12:40:00,12:40:02,Exit

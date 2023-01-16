@@ -39,44 +39,60 @@ def measure_IBI_accuracy(
     FPs = {}
 
     for c_i, c_row in captured.iterrows():
-        for g_i, g_row in ground_truth.iterrows():
 
-            if g_row["Bee ID"] not in TPs.keys():
-                TPs[g_row["Bee ID"]] = 0
-                FPs[g_row["Bee ID"]] = 0
+        current_bee_id = str(c_row["bee_id"])
+        # get the time of the captured event
+        cap = timestamp_to_seconds(c_row["timestamp"].strftime("%H:%M:%S"))
+
+        # if we haven't seen this bee ID before, initialize the TPs and FPs to 0
+        if current_bee_id not in TPs:
+            TPs[current_bee_id] = 0
+            FPs[current_bee_id] = 0
+
+        match_found = False
+        for g_i, g_row in ground_truth.iterrows():
 
             # get the start and end of the ground truth event
             gt_start = timestamp_to_seconds(g_row["Start Timestamp"])
             gt_end = timestamp_to_seconds(g_row["End Timestamp"])
 
-            # get the time of the captured event
-            cap = timestamp_to_seconds(c_row["timestamp"].strftime("%H:%M:%S"))
-
-            # if id is not checked, then we do not assume the bee IDs match, so we will log the combo of both.
-            if not check_id:
-                key = f"GT: {g_row['Bee ID']}, CAP: {c_row['bee_id']}"
-            else:
-                key = c_row["bee_id"]
-
-            # create key if it does not exist
-            if key not in TPs.keys():
-                TPs[key] = 0
-            if key not in FPs.keys():
-                FPs[key] = 0
+            # if we have already found a match, then we can skip the rest of the ground truth events.
+            # We can also do any early escape if we've gone 5 seconds past the buffer.
+            if match_found or cap > gt_end + buffer + 5:
+                break
 
             # check if the captured event is within `buffer`seconds of the ground truth event, or inside it
             if bool(cap >= gt_start - buffer) and bool(cap <= gt_end + buffer):
-
                 if check_id:
                     # check if the bee IDs match
                     if g_row["Bee ID"] != c_row["bee_id"]:
-                        FPs[key] += 1
+                        if verbose:
+                            print(f"... Bee ID mismatch: {c_row['bee_id']} != {g_row['Bee ID']}")
                     else:
-                        TPs[key] += 1
+
+                        if verbose:
+                            print(
+                                "SUCCESS: Match for captured event:"
+                                f" {c_row['bee_id']}=={g_row['Bee ID']} at {cap}"
+                            )
+                        TPs[current_bee_id] += 1
+                        match_found = True
                 else:
-                    TPs[key] += 1
+                    if verbose:
+                        print(f"SUCCESS: Match for captured event: {c_row['bee_id']} at {cap}")
+                    TPs[current_bee_id] += 1
+                    match_found = True
             else:
-                FPs[key] += 1
+                if verbose:
+                    print(f"... No match for captured event: {c_row['bee_id']} at {cap}")
+
+        # we were unable to find a match for the captured event in the ground truth
+        if not match_found:
+            if verbose:
+                print(f"FAILURE: No match for captured event: {c_row['bee_id']} at {cap}")
+            FPs[current_bee_id] += 1
+
+    # region report
 
     # print the captured bee ID counts, sorted by the number of times they were captured, descending
     print("--- REPORT ---")
@@ -97,6 +113,8 @@ def measure_IBI_accuracy(
     top_5_FPs_df = pd.DataFrame(top_5_FPs.items(), columns=["Bee ID", "Count"])
     print(top_5_FPs_df)
 
+    # endregion
+
     # calculate the accuracy
     return sum(TPs.values()) / (sum(TPs.values()) + sum(FPs.values()))
 
@@ -107,5 +125,5 @@ if __name__ == "__main__":
     captured = load_log(sys.argv[2], verbose=False)
 
     # measure the accuracy of the captured data
-    acc = measure_IBI_accuracy(captured, ground_truth)
+    acc = measure_IBI_accuracy(captured, ground_truth, verbose=False)
     print(f"---\nAccuracy: {acc}")

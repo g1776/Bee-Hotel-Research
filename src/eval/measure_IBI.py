@@ -1,7 +1,6 @@
 import pandas as pd
 from utils import load_log
 import sys
-from pprint import pprint
 
 
 def timestamp_to_seconds(timestamp: str) -> float:
@@ -21,7 +20,7 @@ def timestamp_to_seconds(timestamp: str) -> float:
     return int(hours) * 3600 + int(minutes) * 60 + int(seconds)
 
 
-def measure_IBI(
+def measure_IBI_accuracy(
     captured: pd.DataFrame, ground_truth: pd.DataFrame, buffer=10, check_id=True, verbose=True
 ) -> float:
     """
@@ -35,72 +34,71 @@ def measure_IBI(
         verbose (bool): Whether to print the score as it is calculated.
     """
 
-    captured_bee_id_counts = {}
+    # True and False Positive counts for each Bee ID
+    TPs = {}
+    FPs = {}
 
-    # for each ground truth event, check if there is a captured event within `buffer` seconds of it, or inside it
-    # if there is, add 1 to the score
-    # if there isn't, add 0 to the score
-    # divide the score by the number of ground truth events
-    score = 0
-    for index, row in ground_truth.iterrows():
-        # get the start and end of the ground truth event
-        gt_start = timestamp_to_seconds(row["Start Timestamp"])
-        gt_end = timestamp_to_seconds(row["End Timestamp"])
+    for c_i, c_row in captured.iterrows():
+        for g_i, g_row in ground_truth.iterrows():
 
-        # check if there is a captured event within `buffer` seconds of it, or inside it
-        for index2, row2 in captured.iterrows():
-            # get the start and end of the captured event
-            cap = timestamp_to_seconds(row2["timestamp"].strftime("%H:%M:%S"))
+            if g_row["Bee ID"] not in TPs.keys():
+                TPs[g_row["Bee ID"]] = 0
+                FPs[g_row["Bee ID"]] = 0
 
-            # to speed up processing, if the captured event is 10 or more seconds after the ground truth event,
-            # we can assume that there are no more captured events that could match the ground truth event
-            if cap > gt_end + 10:
-                if verbose:
-                    print(
-                        f"Ground truth event {index} has no matching captured event. Score:"
-                        f" {score}/{len(ground_truth)}"
-                    )
-                break
+            # get the start and end of the ground truth event
+            gt_start = timestamp_to_seconds(g_row["Start Timestamp"])
+            gt_end = timestamp_to_seconds(g_row["End Timestamp"])
+
+            # get the time of the captured event
+            cap = timestamp_to_seconds(c_row["timestamp"].strftime("%H:%M:%S"))
+
+            # if id is not checked, then we do not assume the bee IDs match, so we will log the combo of both.
+            if not check_id:
+                key = f"GT: {g_row['Bee ID']}, CAP: {c_row['bee_id']}"
+            else:
+                key = c_row["bee_id"]
+
+            # create key if it does not exist
+            if key not in TPs.keys():
+                TPs[key] = 0
+            if key not in FPs.keys():
+                FPs[key] = 0
 
             # check if the captured event is within `buffer`seconds of the ground truth event, or inside it
             if bool(cap >= gt_start - buffer) and bool(cap <= gt_end + buffer):
 
-                # check if the bee IDs match
-                if check_id and row["Bee ID"] != row2["bee_id"]:
-                    if verbose:
-                        print(
-                            f"Ground truth event {index} has a matching captured event, but the"
-                            f" bee IDs do not match. Score: {score}/{len(ground_truth)}"
-                        )
-                    continue
-
-                score += 1
-                if verbose:
-                    print(
-                        f"Ground truth event {index} has a matching captured event. Score:"
-                        f" {score}/{len(ground_truth)}"
-                    )
-
-                # add the bee ID to the captured bee ID counts.
-                # If check_id is False, the bee ID can be assumed the same for both the ground truth and captured events
                 if check_id:
-                    key = str(row["Bee ID"])
+                    # check if the bee IDs match
+                    if g_row["Bee ID"] != c_row["bee_id"]:
+                        FPs[key] += 1
+                    else:
+                        TPs[key] += 1
                 else:
-                    key = f"GT: {row['Bee ID']}, CAP: {row2['bee_id']}"
-
-                if key in captured_bee_id_counts:
-                    captured_bee_id_counts[key] += 1
-                else:
-                    captured_bee_id_counts[key] = 1
-
-                break
+                    TPs[key] += 1
+            else:
+                FPs[key] += 1
 
     # print the captured bee ID counts, sorted by the number of times they were captured, descending
-    print("\n# of events matched for each Bee ID (or combo of Bee IDs if check_id=False):")
-    pprint(dict(sorted(captured_bee_id_counts.items(), key=lambda x: x[1], reverse=True)))
+    print("--- REPORT ---")
+    print("Captured Events: ", len(captured))
+    print("Ground Truth Events: ", len(ground_truth))
+    print("Total Captured True Positives:", sum(TPs.values()))
+    print("Total Captured False Positives:", sum(FPs.values()))
 
-    # worst 0, best 1
-    return score / len(ground_truth)
+    print("\n---SNAPSHOT---")
+
+    print("Top 5 Captured True Positives by Bee ID:")
+    top_5_TPs = dict(sorted(TPs.items(), key=lambda item: item[1], reverse=True)[:5])
+    top_5_TPs_df = pd.DataFrame(top_5_TPs.items(), columns=["Bee ID", "Count"])
+    print(top_5_TPs_df)
+
+    print("Top 5 Captured False Positives by Bee ID:")
+    top_5_FPs = dict(sorted(FPs.items(), key=lambda item: item[1], reverse=True)[:5])
+    top_5_FPs_df = pd.DataFrame(top_5_FPs.items(), columns=["Bee ID", "Count"])
+    print(top_5_FPs_df)
+
+    # calculate the accuracy
+    return sum(TPs.values()) / (sum(TPs.values()) + sum(FPs.values()))
 
 
 if __name__ == "__main__":
@@ -109,5 +107,5 @@ if __name__ == "__main__":
     captured = load_log(sys.argv[2], verbose=False)
 
     # measure the accuracy of the captured data
-    score = measure_IBI(captured, ground_truth)
-    print(f"---\nScore: {score}")
+    acc = measure_IBI_accuracy(captured, ground_truth)
+    print(f"---\nAccuracy: {acc}")

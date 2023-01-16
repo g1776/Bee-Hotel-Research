@@ -2,6 +2,23 @@ import pandas as pd
 from datetime import datetime
 
 
+def timestamp_to_seconds(timestamp: str) -> float:
+    """
+    Convert a timestamp to seconds.
+
+    Args:
+        timestamp (str): The timestamp to convert.
+
+    Returns:
+        float: The timestamp in seconds.
+    """
+    # split the timestamp into hours, minutes, seconds, and milliseconds
+    hours, minutes, seconds = timestamp.split(":")
+
+    # convert the timestamp to seconds
+    return int(hours) * 3600 + int(minutes) * 60 + int(seconds)
+
+
 def load_log(log, verbose=True) -> pd.DataFrame:
 
     with open(log, "r") as f:

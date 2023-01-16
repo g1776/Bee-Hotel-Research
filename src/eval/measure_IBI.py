@@ -1,23 +1,6 @@
 import pandas as pd
-from utils import load_log
+from utils import load_log, timestamp_to_seconds
 import sys
-
-
-def timestamp_to_seconds(timestamp: str) -> float:
-    """
-    Convert a timestamp to seconds.
-
-    Args:
-        timestamp (str): The timestamp to convert.
-
-    Returns:
-        float: The timestamp in seconds.
-    """
-    # split the timestamp into hours, minutes, seconds, and milliseconds
-    hours, minutes, seconds = timestamp.split(":")
-
-    # convert the timestamp to seconds
-    return int(hours) * 3600 + int(minutes) * 60 + int(seconds)
 
 
 def measure_IBI_accuracy(

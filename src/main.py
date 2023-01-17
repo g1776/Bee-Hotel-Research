@@ -87,5 +87,4 @@ if __name__ == "__main__":
         timestamp_rect=args.timestamp_rect,
         log=args.log,
         show=not args.hl,
-        min_contour_area=400,
     )

@@ -173,7 +173,7 @@ def motion_detector(
                 middle = get_contour_center(contour)
 
                 # find the closest circle to the detected motion.
-                # we associate a bee with its closest circle open disappearing, hence bee_id
+                # we associate a bee with its closest circle once disappearing, hence bee_id
                 bee_id = find_closest_circle(tube_hives, middle)
                 closest_circle = tube_hives[bee_id]
 

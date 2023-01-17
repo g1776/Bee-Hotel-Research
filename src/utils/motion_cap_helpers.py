@@ -79,6 +79,18 @@ def find_closest_circle(circles, point):
 
 
 def process_contours_window(contours_window: List[List[dict]]) -> List[dict]:
+    """Process the contour window to determine when a bee leaves the frame.
+        The idea here is that when a bee finally disappears, it is at the end of its
+        flight/movement path and it has most disappeared from the frame, into the tube hive.
+        This makes sure we only process the final frame the bee is visible to determine its ID.
+
+    Args:
+        contours_window (List[List[dict]]): The list of contours for each frame in the window.
+
+    Returns:
+        List[dict]: The list of contours that are not overlapping with any other contour in the window.
+    """
+
     if len(contours_window) == 0:
         return []
 

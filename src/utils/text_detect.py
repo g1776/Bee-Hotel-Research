@@ -36,6 +36,7 @@ def clean_timestamp(timestamp_to_parse: str) -> str:
     timestamp_to_parse = timestamp_to_parse[:8]
     try:
         timestamp = datetime.strptime(timestamp_to_parse, "%H:%M:%S")
+        timestamp = timestamp.strftime("%H:%M:%S")
     except ValueError:
         print("Unable to parse timestamp:", timestamp_to_parse)
         return INVALID_TIMESTAMP

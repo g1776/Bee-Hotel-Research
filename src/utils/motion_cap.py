@@ -24,7 +24,7 @@ def motion_detector(
 
     Args:
         video (str): Path to video file
-        timestamp (bool, optional): Whether a timestamp is present in the vide. Defaults to False.
+        timestamp (bool, optional): Whether a timestamp is present in the video. Defaults to False.
         timestamp_rect (Union[Tuple[float, float, float, float], None], optional): Coordinates of the timestamp rectangle. Defaults to None.
         detection_rate (int, optional): Number of frames to detect motion between. Defaults to 2.
         motion_threshold (float, optional): Threshold for motion detection (higher threshold = more motion needed). Defaults to 10.
@@ -77,9 +77,14 @@ def motion_detector(
         # This will happen CONTOURS_WINDOW_SIZE frames after the last time a bee was detected, since it needs to compare this many frames
         # the logging itself, however, will have the correct frame number of when the bee was detected
         contour_window_results = process_contours_window(contours_window)
-        if contour_window_results != []:
+        for contour_info in contour_window_results:
 
-            log_msg = generate_log_message(frame_count, TOTAL_FRAMES, timestamp, bee_id)
+            # extract elements from contour info
+            frame = contour_info["frame"]
+            bee_id = contour_info["bee_id"]
+            timestamp_text = contour_info["timestamp"]
+
+            log_msg = generate_log_message(frame, TOTAL_FRAMES, timestamp_text, bee_id)
             print(log_msg)
             if log:
                 log_it(log, log_msg)
@@ -187,7 +192,7 @@ def motion_detector(
                         thickness=2,
                     )
 
-                timestamp = text_detect(
+                timestamp_text = text_detect(
                     frame[
                         timestamp_rect[1] : timestamp_rect[3],
                         timestamp_rect[0] : timestamp_rect[2],
@@ -199,7 +204,7 @@ def motion_detector(
                         "frame": frame_count,
                         "bb": (x, y, w, h),
                         "bee_id": bee_id,
-                        "timestamp": timestamp,
+                        "timestamp": timestamp_text,
                     }
                 )
 

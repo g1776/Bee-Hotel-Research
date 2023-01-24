@@ -111,7 +111,6 @@ def motion_detector(
                 color=(0, 0, 0),
                 thickness=-1,
             )
-            cv2.imshow("masked timestamp", rgb)
 
         gray = cv2.cvtColor(rgb, cv2.COLOR_BGR2GRAY)
         blurred = cv2.GaussianBlur(src=gray, ksize=(5, 5), sigmaX=0)

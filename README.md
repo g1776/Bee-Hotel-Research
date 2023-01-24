@@ -53,6 +53,14 @@ Use OpenCV to detect motion in a video. This will be used to determine when a be
 
 Updates:
 
+-   ** 1/23/2023**: Thoughts after watching 10am:
+
+    -   increase contour window size (this could help reduce false positives, especially the blowing piece of tube material)
+    -   decrease motion threshold
+    -   increase size threshold (maybe not)
+    -   Bees are getting lost in the shadows.
+    -   Ignore any motion that is too far from the tubes (more than a tube radius away?).
+
 -   **10/15/2022**: Introduced _pytesseract_ to extract text from the video. This will be used to determine the timestamp that motion was captured. Before I tried to convert frame number to timestamp, but the frame rate appeared to be inconsistent. Currently the text is extracted correctly about 90% of the time. This can easily be solved. We just design the placement of the timestamp to be conducive to text extraction - Have the Raspberry Pi place the timestamp out of the frame on a black background.
 
     I also noticed that the motion capture completely fails when there is wind. This shakes the entire image. This can be seen several times through the 12pm video. Perhaps some form of image stabilization is needed.

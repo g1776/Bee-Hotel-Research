@@ -12,6 +12,7 @@ def timestamp_to_seconds(timestamp: str) -> float:
     Returns:
         float: The timestamp in seconds.
     """
+
     # split the timestamp into hours, minutes, seconds, and milliseconds
     hours, minutes, seconds = timestamp.split(":")
 

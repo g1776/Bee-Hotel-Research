@@ -36,8 +36,16 @@ def measure_IBI_accuracy(
         for g_i, g_row in ground_truth.iterrows():
 
             # get the start and end of the ground truth event
-            gt_start = timestamp_to_seconds(g_row["Start Timestamp"])
-            gt_end = timestamp_to_seconds(g_row["End Timestamp"])
+            if g_row["End Timestamp"] == pd.NaT:
+                # we don't have a start timestamp. No luck
+                pass
+            gt_start = timestamp_to_seconds(g_row["Start Timestamp"].strftime("%H:%M:%S"))
+
+            # if the end is NaT, then the event is only one frame long, so we set the end to the start
+            if pd.isna(g_row["End Timestamp"]):
+                gt_end = gt_start
+            else:
+                gt_end = timestamp_to_seconds(g_row["End Timestamp"].strftime("%H:%M:%S"))
 
             # if we have already found a match, then we can skip the rest of the ground truth events.
             # We can also do any early escape if we've gone 5 seconds past the buffer.

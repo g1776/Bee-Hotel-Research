@@ -2,13 +2,22 @@ import cv2
 from typing import List, Tuple
 from math import dist
 import numpy as np
-from .logging import log_it
+from .logging import log_it, generate_log_message
 from collections import namedtuple
 
 RECT_NAMEDTUPLE = namedtuple("RECT_NAMEDTUPLE", "x1 x2 y1 y2")
 
 
-def overlap(rec1, rec2):
+def overlap(rec1, rec2) -> bool:
+    """Check if two rectangles overlap.
+
+    Args:
+        rec1 (RECT_NAMEDTUPLE): First rectangle
+        rec2 (RECT_NAMEDTUPLE): Second rectangle
+
+    Returns:
+        bool: True if the rectangles overlap, False otherwise
+    """
     if (rec2.x2 > rec1.x1 and rec2.x2 < rec1.x2) or (rec2.x1 > rec1.x1 and rec2.x1 < rec1.x2):
         x_match = True
     else:
@@ -78,7 +87,7 @@ def find_closest_circle(circles, point):
     return index_of_closest_circle
 
 
-def process_contours_window(contours_window: List[List[dict]]) -> List[dict]:
+def process_contours_window(contours_window: List[List[dict]], TOTAL_FRAMES, config) -> None:
     """Process the contour window to determine when a bee leaves the frame.
         The idea here is that when a bee finally disappears, it is at the end of its
         flight/movement path and it has most disappeared from the frame, into the tube hive.
@@ -88,14 +97,14 @@ def process_contours_window(contours_window: List[List[dict]]) -> List[dict]:
         contours_window (List[List[dict]]): The list of contours for each frame in the window.
 
     Returns:
-        List[dict]: The list of contours that are not overlapping with any other contour in the window.
+        None
     """
 
     if len(contours_window) == 0:
         return []
 
-    detected_bees_info = []
-
+    # process the contours window to determine when a bee leaves the frame
+    contours_to_log = []
     last_frame = contours_window[-1]
     for contour_info in last_frame:
         overlap_found = False
@@ -124,6 +133,17 @@ def process_contours_window(contours_window: List[List[dict]]) -> List[dict]:
                     break
 
         if not overlap_found:
-            detected_bees_info.append(contour_info)
+            contours_to_log.append(contour_info)
 
-    return detected_bees_info
+    # log the contours that made it through the window
+    for contour_info in contours_to_log:
+
+        # extract elements from contour info
+        frame = contour_info["frame"]
+        bee_id = contour_info["bee_id"]
+        timestamp_text = contour_info["timestamp"]
+
+        log_msg = generate_log_message(frame, TOTAL_FRAMES, timestamp_text, bee_id)
+        print(log_msg)
+        if config.LOG:
+            log_it(config.LOG, log_msg)

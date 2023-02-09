@@ -8,6 +8,30 @@ from .utils.text_detect import text_detect
 from src.config import MotionCapConfig
 
 
+def preprocess_frame(frame, config):
+    rgb = cv2.cvtColor(src=frame, code=cv2.COLOR_BGR2RGB)
+
+    # make a copy of the frame to draw on for visualization
+    to_display = frame.copy()
+
+    # put black rectangle over timestamp if present
+    if config.TIMESTAMP:
+        if config.TIMESTAMP_RECT is None:
+            raise ValueError("Timestamp rectangle coordinates not provided")
+        rgb = cv2.rectangle(
+            img=rgb,
+            pt1=config.TIMESTAMP_RECT[:2],
+            pt2=config.TIMESTAMP_RECT[2:],
+            color=(0, 0, 0),
+            thickness=-1,
+        )
+
+    gray = cv2.cvtColor(rgb, cv2.COLOR_BGR2GRAY)
+    blurred = cv2.GaussianBlur(src=gray, ksize=(5, 5), sigmaX=0)
+
+    return to_display, blurred
+
+
 def motion_detector(
     config: MotionCapConfig,
 ):
@@ -51,51 +75,19 @@ def motion_detector(
 
         # log detected bee based on the processed contours window
         # This will happen CONTOURS_WINDOW_SIZE frames after the last time a bee was detected, since it needs to compare this many frames
-        # the logging itself, however, will have the correct frame number of when the bee was detected
-        contour_window_results = process_contours_window(contours_window)
-        for contour_info in contour_window_results:
+        # the logging itself, however, will have the correct frame number of when the bee was detected.
+        # NOTE: This is where the logging happens
+        process_contours_window(contours_window, TOTAL_FRAMES, config)
 
-            # extract elements from contour info
-            frame = contour_info["frame"]
-            bee_id = contour_info["bee_id"]
-            timestamp_text = contour_info["timestamp"]
-
-            log_msg = generate_log_message(frame, TOTAL_FRAMES, timestamp_text, bee_id)
-            print(log_msg)
-            if config.LOG:
-                log_it(config.LOG, log_msg)
-
-        # region preprocess_frame
-
-        # read image and convert to rgb
+        # read and preprocess the frame
         success, frame = cap.read()
         if not success:
             break
-        rgb = cv2.cvtColor(src=frame, code=cv2.COLOR_BGR2RGB)
-
-        # make a copy of the frame to draw on for visualization
-        to_display = frame.copy()
-
-        # put black rectangle over timestamp if present
-        if config.TIMESTAMP:
-            if config.TIMESTAMP_RECT is None:
-                raise ValueError("Timestamp rectangle coordinates not provided")
-            rgb = cv2.rectangle(
-                img=rgb,
-                pt1=config.TIMESTAMP_RECT[:2],
-                pt2=config.TIMESTAMP_RECT[2:],
-                color=(0, 0, 0),
-                thickness=-1,
-            )
-
-        gray = cv2.cvtColor(rgb, cv2.COLOR_BGR2GRAY)
-        blurred = cv2.GaussianBlur(src=gray, ksize=(5, 5), sigmaX=0)
-
-        # endregion
+        to_display, preprocessed = preprocess_frame(frame, config)
 
         # wait 30 frames before detecting circles, in case it takes a couple seconds for the camera to focus
         if frame_count == 30:
-            tube_hives = get_tube_hives_coords(blurred, config.LOG)
+            tube_hives = get_tube_hives_coords(preprocessed, config.LOG)
 
         # determine motion on every detection_rate-th frame
         frame_count += 1
@@ -106,12 +98,12 @@ def motion_detector(
             # 3. Set previous frame and continue if there is None
             if previous_frame is None:
                 # First frame; there is no previous one yet
-                previous_frame = blurred
+                previous_frame = preprocessed
                 continue
 
             # calculate difference and update previous frame
-            diff_frame = cv2.absdiff(src1=previous_frame, src2=blurred)
-            previous_frame = blurred
+            diff_frame = cv2.absdiff(src1=previous_frame, src2=preprocessed)
+            previous_frame = preprocessed
 
             # 4. Dilute the image a bit to make differences more seeable; more suitable for contour detection
             kernel = np.ones((5, 5))

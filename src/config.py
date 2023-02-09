@@ -7,8 +7,8 @@ import os
 class MotionCapConfig:
     """
     video (str): Path to video file
-    timestamp (bool, optional): Whether a timestamp is present in the video. Defaults to False.
-    timestamp_rect (Union[Tuple[float, float, float, float], None], optional): Coordinates of the timestamp rectangle. Defaults to None.
+    timestamp (bool, optional): Whether a timestamp is present in the video. Defaults to True.
+    timestamp_rect (Union[Tuple[float, float, float, float], None], optional): Coordinates of the timestamp rectangle. Defaults to (210, 20, 510, 50).
     detection_rate (int, optional): Number of frames to detect motion between. Defaults to 2.
     motion_threshold (float, optional): Threshold for motion detection (higher threshold = more motion needed). Defaults to 10.
     min_contour_area (float, optional): Minimum area of a contour to be considered motion. Defaults to 200.
@@ -22,8 +22,8 @@ class MotionCapConfig:
     # defaults
     VIDEO: str = ""
     TESSERACT: str = ""
-    TIMESTAMP: bool = False
-    TIMESTAMP_RECT: Union[Tuple[float, float, float, float], None] = None
+    TIMESTAMP: bool = True
+    TIMESTAMP_RECT: Union[Tuple[float, float, float, float], None] = (210, 20, 510, 50)
     DETECTION_RATE: int = 2
     MOTION_THRESHOLD: float = 10
     MIN_CONTOUR_AREA: float = 200

@@ -1,5 +1,5 @@
 import datetime
-from typing import List, Tuple, Union
+from typing import List
 import cv2
 import numpy as np
 from .utils.motion_cap_helpers import *
@@ -12,8 +12,6 @@ def motion_detector(
     config: MotionCapConfig,
 ):
     """Detect motion in a video"""
-
-    print(config)
 
     # region init
 

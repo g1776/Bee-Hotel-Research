@@ -1,10 +1,11 @@
 import argparse
-from src.utils.motion_cap import motion_detector
+from src.motion_cap import motion_detector
 from colorama import init
 from termcolor import colored
 import pytesseract
 from dotenv import load_dotenv
 from types import SimpleNamespace
+from src.config import MotionCapConfig
 import os
 
 
@@ -81,10 +82,4 @@ if __name__ == "__main__":
 
     pytesseract.pytesseract.tesseract_cmd = args.tesseract
 
-    motion_detector(
-        args.video,
-        timestamp=args.timestamp,
-        timestamp_rect=args.timestamp_rect,
-        log=args.log,
-        show=not args.hl,
-    )
+    motion_detector(config=MotionCapConfig(args))

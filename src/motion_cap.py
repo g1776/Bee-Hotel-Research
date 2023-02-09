@@ -2,62 +2,40 @@ import datetime
 from typing import List, Tuple, Union
 import cv2
 import numpy as np
-from .motion_cap_helpers import *
-from .logging import *
-
-from src.utils.text_detect import text_detect
+from .utils.motion_cap_helpers import *
+from .utils.logging import *
+from .utils.text_detect import text_detect
+from src.config import MotionCapConfig
 
 
 def motion_detector(
-    video,
-    timestamp: bool = False,
-    timestamp_rect: Union[Tuple[float, float, float, float], None] = None,
-    detection_rate: int = 2,
-    motion_threshold: float = 10,
-    min_contour_area: float = 400,
-    max_contour_area: float = 1000,
-    log: str | None = None,
-    motion_granularity: int = None,
-    show: bool = True,
+    config: MotionCapConfig,
 ):
-    """Detect motion in a video
+    """Detect motion in a video"""
 
-    Args:
-        video (str): Path to video file
-        timestamp (bool, optional): Whether a timestamp is present in the video. Defaults to False.
-        timestamp_rect (Union[Tuple[float, float, float, float], None], optional): Coordinates of the timestamp rectangle. Defaults to None.
-        detection_rate (int, optional): Number of frames to detect motion between. Defaults to 2.
-        motion_threshold (float, optional): Threshold for motion detection (higher threshold = more motion needed). Defaults to 10.
-        min_contour_area (float, optional): Minimum area of a contour to be considered motion. Defaults to 200.
-        max_contour_area (float, optional): Maximum area of a contour to be considered motion. Defaults to 1000.
-        log (str | None, optional): Path to log file. Defaults to None.
-        motion_granularity (int, optional): Minimum number of frames between logging motion. If None defaults to FPS (aka 1 second).
-        show (bool, optional): Whether to show the video. Defaults to True.
-
-    """
+    print(config)
 
     # region init
 
     print(
-        f"--- Motion detection session started at {datetime.datetime.now()} for file {video} ---"
+        f"--- Motion detection session started at {datetime.datetime.now()} for file"
+        f" {config.VIDEO} ---"
     )
 
-    if log:
-        init_logging_session(log, video)
+    if config.LOG:
+        init_logging_session(config.LOG, config.VIDEO)
 
-    cap = cv2.VideoCapture(video)
+    cap = cv2.VideoCapture(config.VIDEO)
 
-    if motion_granularity is None:
-        motion_granularity = int(cap.get(cv2.CAP_PROP_FPS))
+    if config.MOTION_GRANULARITY is None:
+        config.MOTION_GRANULARITY = int(cap.get(cv2.CAP_PROP_FPS))
 
     TOTAL_FRAMES = cap.get(cv2.CAP_PROP_FRAME_COUNT)
     frame_count = 0
     previous_frame = None
     tube_hives = []
 
-    CONTOURS_WINDOW_SIZE = 10  # the number of frames to check no contours for
-
-    # contours window is a list of contours information for the last CONTOURS_WINDOW_SIZE+1 frames
+    # contours window is a list of contours information for the last config.CONTOURS_WINDOW_SIZE+1 frames
     # each element is a list of the contour information that happened in the associated frame.
     # Each contour information is a dictionary of {bee_id, frame, bb}. (bb = bounding box)
     # The last element in the list is the most recent frame.
@@ -86,10 +64,10 @@ def motion_detector(
 
             log_msg = generate_log_message(frame, TOTAL_FRAMES, timestamp_text, bee_id)
             print(log_msg)
-            if log:
-                log_it(log, log_msg)
+            if config.LOG:
+                log_it(config.LOG, log_msg)
 
-        # region process_frame
+        # region preprocess_frame
 
         # read image and convert to rgb
         success, frame = cap.read()
@@ -101,13 +79,13 @@ def motion_detector(
         to_display = frame.copy()
 
         # put black rectangle over timestamp if present
-        if timestamp:
-            if timestamp_rect is None:
+        if config.TIMESTAMP:
+            if config.TIMESTAMP_RECT is None:
                 raise ValueError("Timestamp rectangle coordinates not provided")
             rgb = cv2.rectangle(
                 img=rgb,
-                pt1=timestamp_rect[:2],
-                pt2=timestamp_rect[2:],
+                pt1=config.TIMESTAMP_RECT[:2],
+                pt2=config.TIMESTAMP_RECT[2:],
                 color=(0, 0, 0),
                 thickness=-1,
             )
@@ -119,11 +97,11 @@ def motion_detector(
 
         # wait 30 frames before detecting circles, in case it takes a couple seconds for the camera to focus
         if frame_count == 30:
-            tube_hives = get_tube_hives_coords(blurred, log)
+            tube_hives = get_tube_hives_coords(blurred, config.LOG)
 
         # determine motion on every detection_rate-th frame
         frame_count += 1
-        if (frame_count % detection_rate) == 0:
+        if (frame_count % config.DETECTION_RATE) == 0:
 
             # region detect_motion
 
@@ -143,7 +121,7 @@ def motion_detector(
 
             # 5. Only take different areas that are different enough (>motion_threshold / 255)
             thresh_frame = cv2.threshold(
-                src=diff_frame, thresh=motion_threshold, maxval=255, type=cv2.THRESH_BINARY
+                src=diff_frame, thresh=config.MOTION_THRESHOLD, maxval=255, type=cv2.THRESH_BINARY
             )[1]
 
             # 6. Find contours
@@ -155,7 +133,9 @@ def motion_detector(
 
             # filter out contours that are too small or too large
             contours_to_check = [
-                c for c in contours if min_contour_area < cv2.contourArea(c) < max_contour_area
+                c
+                for c in contours
+                if config.MIN_CONTOUR_AREA < cv2.contourArea(c) < config.MAX_CONTOUR_AREA
             ]
 
             # initialize the contour window entry
@@ -193,8 +173,8 @@ def motion_detector(
 
                 timestamp_text = text_detect(
                     frame[
-                        timestamp_rect[1] : timestamp_rect[3],
-                        timestamp_rect[0] : timestamp_rect[2],
+                        config.TIMESTAMP_RECT[1] : config.TIMESTAMP_RECT[3],
+                        config.TIMESTAMP_RECT[0] : config.TIMESTAMP_RECT[2],
                     ]
                 )
 
@@ -208,12 +188,12 @@ def motion_detector(
                 )
 
             # add to contours window, maintaining window size
-            if len(contours_window) == CONTOURS_WINDOW_SIZE + 1:
+            if len(contours_window) == config.CONTOURS_WINDOW_SIZE + 1:
                 contours_window.pop(0)
             contours_window.append(contour_window_entry)
 
         # show image
-        if show:
+        if config.SHOW:
             cv2.imshow("🐝🏨 motion detector", to_display)
 
         # check for quit operation
@@ -223,4 +203,4 @@ def motion_detector(
 
     cap.release()
     cv2.destroyAllWindows()
-    print(f"\nFinished processing {video}")
+    print(f"\nFinished processing {config.VIDEO}")

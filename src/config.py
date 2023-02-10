@@ -45,7 +45,7 @@ class MotionCapConfig:
     CONTOUR_WINDOW_SIZE: int = 10
 
     # The number of frames to wait before starting motion detection and finding the tube hives
-    BUFFER_FRAMES: int = 120
+    BUFFER_FRAMES: int = 200
 
     # The maximum distance from any tube a contour can be without being dropped
     MAX_DISTANCE_FROM_TUBE: int = 20

@@ -1,8 +1,10 @@
 import datetime
 
 
-def generate_log_message(frame: int, total_frames: int, timestamp: str, bee_id: int) -> str:
-    return f"Bee ID={bee_id} detected at frame {frame}/{total_frames}, Timestamp: {timestamp}"
+def generate_log_message(frame_count: int, total_frames: int, timestamp: str, bee_id: int) -> str:
+    return (
+        f"Bee ID={bee_id} detected at frame {frame_count}/{total_frames}, Timestamp: {timestamp}"
+    )
 
 
 def log_it(fp: str, msg: str):

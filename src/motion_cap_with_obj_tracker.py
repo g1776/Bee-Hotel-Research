@@ -22,7 +22,7 @@ def motion_detector(
     )
 
     if config.LOG:
-        init_logging_session(config.LOG, config.VIDEO)
+        init_logging_session(config)
 
     cap = cv2.VideoCapture(config.VIDEO)
 
@@ -38,6 +38,8 @@ def motion_detector(
     # endregion
 
     while True:
+
+        print("Processing frame {}/{}".format(frame_count, TOTAL_FRAMES))
 
         # ignore the first `BUFFER_FRAMES` frames to allow the camera to adjust to the environment
         if frame_count < config.BUFFER_FRAMES:
@@ -73,6 +75,17 @@ def motion_detector(
             # NOTE: This is where the bee_ids are assigned
             contours_to_track = filter_contours(contours, tube_hives, config)
 
+            # Detect timestamp if there are contours to track
+            timestamp = None
+            if len(contours_to_track) > 0:
+                # Detect timestamp
+                timestamp = text_detect(
+                    frame[
+                        config.TIMESTAMP_RECT[1] : config.TIMESTAMP_RECT[3],
+                        config.TIMESTAMP_RECT[0] : config.TIMESTAMP_RECT[2],
+                    ]
+                )
+
             # First, check contours without trackers and start trackers for them
             for contour in contours_to_track:
 
@@ -85,15 +98,48 @@ def motion_detector(
                 if ignore_contour:
                     continue
 
-                print(f"Frame {frame_count}: Tracking bee starting at {contour['bb']}")
                 obj_tracker = ObjTracker(config, contour["bb"], frame)
+
+                # log bee entry
+                if config.LOG:
+                    log_bee_enter(
+                        config.LOG,
+                        frame_count,
+                        TOTAL_FRAMES,
+                        timestamp,
+                        contour["bee_id"],
+                        obj_tracker.id,
+                    )
+
                 obj_trackers.add_tracker(obj_tracker)
 
-            # Then, update all trackers.
-            print(f"Frame {frame_count}: Updating {len(obj_trackers.trackers)} trackers")
+            # Then, update all trackers, and drop ones that have lost the bee. Log bee exits
             dropped_trackers = obj_trackers.update(frame)
 
-            # TODO: Generate the logs from the dropped trackers
+            # calculate the timestamp again if it was not calculated before and there are trackers to drop
+            if timestamp is None and len(dropped_trackers) > 0:
+                # Detect timestamp
+                timestamp = text_detect(
+                    frame[
+                        config.TIMESTAMP_RECT[1] : config.TIMESTAMP_RECT[3],
+                        config.TIMESTAMP_RECT[0] : config.TIMESTAMP_RECT[2],
+                    ]
+                )
+
+            for tracker in dropped_trackers:
+
+                # calculate Bee ID on exit
+                bee_id_on_exit = tracker.get_current_bee_id(tube_hives, config)
+
+                if config.LOG:
+                    log_bee_exit(
+                        config.LOG,
+                        frame_count,
+                        TOTAL_FRAMES,
+                        timestamp,
+                        bee_id_on_exit,
+                        tracker.id,
+                    )
 
         if config.SHOW:
             cv2.imshow("🐝🏨 motion detector", frame)

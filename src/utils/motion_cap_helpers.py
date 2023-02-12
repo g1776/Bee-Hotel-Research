@@ -2,7 +2,7 @@ import cv2
 from typing import List, Tuple
 from math import dist
 import numpy as np
-from .logging import log_it, generate_log_message
+from .logging import log_it
 from collections import namedtuple
 from .text_detect import text_detect
 
@@ -70,6 +70,10 @@ def get_contour_center(c) -> Tuple[int, int]:
     return cX, cY
 
 
+def get_bb_center(bb) -> Tuple[int, int]:
+    return (bb[0] + bb[2]) // 2, (bb[1] + bb[3]) // 2
+
+
 def find_closest_circle(circles, point, config) -> int | None:
     """
     Find the closest circle to a point. Returns the index of the circle in the list of circles. If too far away, returns None.
@@ -119,92 +123,92 @@ def draw_assigned_contour_on_frame(assigned_contour, frame) -> None:
         )
 
 
-def process_contours_window(contours_window: List[List[dict]], TOTAL_FRAMES, config) -> None:
-    """Process the contour window to determine when a bee leaves the frame.
-        The idea here is that when a bee finally disappears, it is at the end of its
-        flight/movement path and it has most disappeared from the frame, into the tube hive.
-        This makes sure we only process the final frame the bee is visible to determine its ID.
+# def process_contours_window(contours_window: List[List[dict]], TOTAL_FRAMES, config) -> None:
+#     """Process the contour window to determine when a bee leaves the frame.
+#         The idea here is that when a bee finally disappears, it is at the end of its
+#         flight/movement path and it has most disappeared from the frame, into the tube hive.
+#         This makes sure we only process the final frame the bee is visible to determine its ID.
 
-    Args:
-        contours_window (List[List[dict]]): The list of contours for each frame in the window.
+#     Args:
+#         contours_window (List[List[dict]]): The list of contours for each frame in the window.
 
-    Returns:
-        None
-    """
+#     Returns:
+#         None
+#     """
 
-    if len(contours_window) == 0:
-        return None
+#     if len(contours_window) == 0:
+#         return None
 
-    # process the contours window to determine when a bee leaves the frame
-    contours_to_log = []
-    last_frame = contours_window[-1]
-    if last_frame is None or len(last_frame) == 0:
-        return None
+#     # process the contours window to determine when a bee leaves the frame
+#     contours_to_log = []
+#     last_frame = contours_window[-1]
+#     if last_frame is None or len(last_frame) == 0:
+#         return None
 
-    # show the frame in the contours that are being logged
-    frame_to_show = last_frame[0]["frame"]
+#     # show the frame in the contours that are being logged
+#     frame_to_show = last_frame[0]["frame"]
 
-    # we do this since when there are no contours, assigned_contour is None
-    contours_to_check = [
-        contour_info for contour_info in last_frame if contour_info["assigned_contour"] is not None
-    ]
+#     # we do this since when there are no contours, assigned_contour is None
+#     contours_to_check = [
+#         contour_info for contour_info in last_frame if contour_info["assigned_contour"] is not None
+#     ]
 
-    for contour_info in contours_to_check:
-        (x, y, w, h) = cv2.boundingRect(contour_info["assigned_contour"]["contour"])
-        overlap_found = False
-        for older_frame in contours_window[: len(contours_window) - 1]:
+#     for contour_info in contours_to_check:
+#         (x, y, w, h) = cv2.boundingRect(contour_info["assigned_contour"]["contour"])
+#         overlap_found = False
+#         for older_frame in contours_window[: len(contours_window) - 1]:
 
-            # if we found an overlap, we don''t need to keep checking this contour against old frames
-            if overlap_found:
-                break
+#             # if we found an overlap, we don''t need to keep checking this contour against old frames
+#             if overlap_found:
+#                 break
 
-            for older_contour_info in older_frame:
+#             for older_contour_info in older_frame:
 
-                # ignore frames with no contours
-                if older_contour_info["assigned_contour"] is None:
-                    continue
+#                 # ignore frames with no contours
+#                 if older_contour_info["assigned_contour"] is None:
+#                     continue
 
-                (o_x, o_y, o_w, o_h) = cv2.boundingRect(
-                    older_contour_info["assigned_contour"]["contour"]
-                )
-                if overlap(
-                    RECT_NAMEDTUPLE(
-                        x,
-                        x + w,
-                        y,
-                        y + h,
-                    ),
-                    RECT_NAMEDTUPLE(
-                        o_x,
-                        o_x + o_w,
-                        o_y,
-                        o_y + o_h,
-                    ),
-                ):
-                    overlap_found = True
-                    break
+#                 (o_x, o_y, o_w, o_h) = cv2.boundingRect(
+#                     older_contour_info["assigned_contour"]["contour"]
+#                 )
+#                 if overlap(
+#                     RECT_NAMEDTUPLE(
+#                         x,
+#                         x + w,
+#                         y,
+#                         y + h,
+#                     ),
+#                     RECT_NAMEDTUPLE(
+#                         o_x,
+#                         o_x + o_w,
+#                         o_y,
+#                         o_y + o_h,
+#                     ),
+#                 ):
+#                     overlap_found = True
+#                     break
 
-        if not overlap_found:
-            contours_to_log.append(contour_info)
+#         if not overlap_found:
+#             contours_to_log.append(contour_info)
 
-    # log the contours that made it through the window, and draw them on the frame_to_show
-    for contour_info in contours_to_log:
+#     # log the contours that made it through the window, and draw them on the frame_to_show
+#     for contour_info in contours_to_log:
 
-        # extract elements from contour info
-        frame_count = contour_info["frame_count"]
-        bee_id = contour_info["assigned_contour"]["bee_id"]
-        timestamp_text = contour_info["timestamp"]
+#         # extract elements from contour info
+#         frame_count = contour_info["frame_count"]
+#         bee_id = contour_info["assigned_contour"]["bee_id"]
+#         timestamp_text = contour_info["timestamp"]
 
-        # show image
-        draw_assigned_contour_on_frame(contour_info["assigned_contour"], frame_to_show)
+#         # show image
+#         draw_assigned_contour_on_frame(contour_info["assigned_contour"], frame_to_show)
 
-        log_msg = generate_log_message(frame_count, TOTAL_FRAMES, timestamp_text, bee_id)
-        print(log_msg)
-        if config.LOG:
-            log_it(config.LOG, log_msg)
+#         log_msg = generate_log_message(frame_count, TOTAL_FRAMES, timestamp_text, bee_id)
+#         print(log_msg)
+#         if config.LOG:
+#             log_it(config.LOG, log_msg)
 
-    if config.SHOW:
-        cv2.imshow("🐝🏨 motion detector", frame_to_show)
+#     if config.SHOW:
+#         cv2.imshow("🐝🏨 motion detector", frame_to_show)
 
 
 def preprocess_frame(frame, config):

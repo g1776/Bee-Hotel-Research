@@ -6,10 +6,11 @@ import cv2
 import datetime
 import cv2
 from .utils.logging import *
-from .utils.motion_cap_helpers import overlap, RECT_NAMEDTUPLE
+from .utils.motion_cap_helpers import overlap, RECT_NAMEDTUPLE, get_bb_center, find_closest_circle
 import imutils
 from imutils.video import FPS
-from typing import List, Tuple
+from typing import List
+from uuid import uuid4
 
 
 def obj_tracker(config: MotionCapConfig):
@@ -92,9 +93,11 @@ class ObjTracker:
         self.config = config
         self.tracker = cv2.TrackerKCF_create()
         self.tracker.init(init_frame, init_bb)
-        self.initBB = init_bb
         self.current_bb = init_bb
         self.object_exists = False
+
+        # unique id for each tracker
+        self.id = uuid4()
 
     def update(self, frame):
         # grab the new bounding box coordinates of the object
@@ -107,6 +110,14 @@ class ObjTracker:
             self.object_exists = True
         else:
             self.object_exists = False
+
+    def get_current_bee_id(self, tube_hives, config) -> int:
+        """Get the id of the bee that is currently tracked by this tracker."""
+        dropped_bee_bb = self.current_bb
+        middle = get_bb_center(dropped_bee_bb)
+        bee_id = find_closest_circle(tube_hives, middle, config)
+
+        return bee_id
 
     def draw(self, frame):
         (x, y, w, h) = [int(v) for v in self.current_bb]

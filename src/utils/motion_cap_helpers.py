@@ -71,10 +71,11 @@ def get_contour_center(c) -> Tuple[int, int]:
 
 
 def get_bb_center(bb) -> Tuple[int, int]:
-    return (bb[0] + bb[2]) // 2, (bb[1] + bb[3]) // 2
+    (x, y, w, h) = [int(v) for v in bb]
+    return x + w // 2, y + h // 2
 
 
-def find_closest_circle(circles, point, config) -> int | None:
+def find_closest_circle(circles, point, config, use_max_dist=True) -> int | None:
     """
     Find the closest circle to a point. Returns the index of the circle in the list of circles. If too far away, returns None.
     """
@@ -87,7 +88,7 @@ def find_closest_circle(circles, point, config) -> int | None:
         circle_dist = dist(np.array(circle)[:2], point)
 
         # if the circle is too far away, ignore it
-        if circle_dist > config.MAX_DISTANCE_FROM_TUBE:
+        if circle_dist > config.MAX_DISTANCE_FROM_TUBE and use_max_dist:
             continue
 
         if closest_circle_dist is None or circle_dist < closest_circle_dist:

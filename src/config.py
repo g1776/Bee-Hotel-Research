@@ -48,7 +48,7 @@ class MotionCapConfig:
     BUFFER_FRAMES: int = 200
 
     # The maximum distance from any tube a contour can be without being dropped
-    MAX_DISTANCE_FROM_TUBE: int = 10
+    MAX_DISTANCE_FROM_TUBE: int = 20
 
     def __init__(self):
 

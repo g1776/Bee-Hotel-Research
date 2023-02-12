@@ -1,4 +1,4 @@
---- Logging session started at 2023-02-12 14:27:24.538037 for file C:\Users\grego\OneDrive\Pictures\Documents\Projects\BeeHotel\2022-05-14_10_00.mp4 ---
+--- Logging session started at 2023-02-12 14:43:20.662494 for file C:\Users\grego\OneDrive\Pictures\Documents\Projects\BeeHotel\2022-05-14_10_00.mp4 ---
 MotionCapConfig({'VIDEO': 'C:\\Users\\grego\\OneDrive\\Pictures\\Documents\\Projects\\BeeHotel\\2022-05-14_10_00.mp4', 'TESSERACT': 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe', 'LOG': '10am_log_remove_wind.txt', 'TIMESTAMP': True, 'TIMESTAMP_RECT': (210, 20, 510, 50), 'CONTOUR_WINDOW_SIZE': 7, 'MOTION_THRESHOLD': 10.0})
 Coordinates of Tube Hives detected, along with associated Bee ID:
 Bee ID=0 Tube Hive Coords: [380 202]
@@ -41,7 +41,24 @@ Bee ID=36 Tube Hive Coords: [342 430]
 Bee ID=37 Tube Hive Coords: [200 368]
 
 
---- Logging session started at 2023-02-12 14:28:34.604147 for file C:\Users\grego\OneDrive\Pictures\Documents\Projects\BeeHotel\2022-05-14_10_00.mp4 ---
+(Tracker 0 start) Bee ID=14 enter at frame 1377/108042.0, Timestamp: 10:01:31
+(Tracker 1 start) Bee ID=14 enter at frame 1378/108042.0, Timestamp: 10:01:31
+(Tracker 0 end) Bee ID=None exit at frame 1378/108042.0, Timestamp: 10:01:31
+(Tracker 2 start) Bee ID=4 enter at frame 1379/108042.0, Timestamp: 10:01:31
+(Tracker 3 start) Bee ID=16 enter at frame 1379/108042.0, Timestamp: 10:01:31
+(Tracker 4 start) Bee ID=14 enter at frame 1379/108042.0, Timestamp: 10:01:31
+(Tracker 5 start) Bee ID=14 enter at frame 1380/108042.0, Timestamp: 10:01:31
+(Tracker 1 end) Bee ID=None exit at frame 1380/108042.0, Timestamp: 10:01:31
+(Tracker 4 end) Bee ID=None exit at frame 1380/108042.0, Timestamp: 10:01:31
+(Tracker 2 end) Bee ID=None exit at frame 1381/108042.0, Timestamp: 10:01:31
+(Tracker 6 start) Bee ID=14 enter at frame 1382/108042.0, Timestamp: 10:01:31
+(Tracker 5 end) Bee ID=None exit at frame 1383/108042.0, Timestamp: 10:01:31
+(Tracker 7 start) Bee ID=14 enter at frame 1384/108042.0, Timestamp: 10:01:31
+(Tracker 6 end) Bee ID=None exit at frame 1384/108042.0, Timestamp: 10:01:31
+(Tracker 3 end) Bee ID=None exit at frame 1385/108042.0, Timestamp: 10:01:31
+(Tracker 8 start) Bee ID=1 enter at frame 1387/108042.0, Timestamp: 10:01:31
+(Tracker 9 start) Bee ID=1 enter at frame 1388/108042.0, Timestamp: 10:01:31
+--- Logging session started at 2023-02-12 14:46:49.617801 for file C:\Users\grego\OneDrive\Pictures\Documents\Projects\BeeHotel\2022-05-14_10_00.mp4 ---
 MotionCapConfig({'VIDEO': 'C:\\Users\\grego\\OneDrive\\Pictures\\Documents\\Projects\\BeeHotel\\2022-05-14_10_00.mp4', 'TESSERACT': 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe', 'LOG': '10am_log_remove_wind.txt', 'TIMESTAMP': True, 'TIMESTAMP_RECT': (210, 20, 510, 50), 'CONTOUR_WINDOW_SIZE': 7, 'MOTION_THRESHOLD': 10.0})
 Coordinates of Tube Hives detected, along with associated Bee ID:
 Bee ID=0 Tube Hive Coords: [380 202]
@@ -84,7 +101,24 @@ Bee ID=36 Tube Hive Coords: [342 430]
 Bee ID=37 Tube Hive Coords: [200 368]
 
 
---- Logging session started at 2023-02-12 14:29:26.789054 for file C:\Users\grego\OneDrive\Pictures\Documents\Projects\BeeHotel\2022-05-14_10_00.mp4 ---
+(Tracker 0 start) Bee ID=14 enter at frame 1377/108042.0, Timestamp: 10:01:31
+(Tracker 1 start) Bee ID=14 enter at frame 1378/108042.0, Timestamp: 10:01:31
+(Tracker 0 end) Bee ID=31 exit at frame 1378/108042.0, Timestamp: 10:01:31
+(Tracker 2 start) Bee ID=4 enter at frame 1379/108042.0, Timestamp: 10:01:31
+(Tracker 3 start) Bee ID=16 enter at frame 1379/108042.0, Timestamp: 10:01:31
+(Tracker 4 start) Bee ID=14 enter at frame 1379/108042.0, Timestamp: 10:01:31
+(Tracker 5 start) Bee ID=14 enter at frame 1380/108042.0, Timestamp: 10:01:31
+(Tracker 1 end) Bee ID=31 exit at frame 1380/108042.0, Timestamp: 10:01:31
+(Tracker 4 end) Bee ID=31 exit at frame 1380/108042.0, Timestamp: 10:01:31
+(Tracker 2 end) Bee ID=31 exit at frame 1381/108042.0, Timestamp: 10:01:31
+(Tracker 6 start) Bee ID=14 enter at frame 1382/108042.0, Timestamp: 10:01:31
+(Tracker 5 end) Bee ID=31 exit at frame 1383/108042.0, Timestamp: 10:01:31
+(Tracker 7 start) Bee ID=14 enter at frame 1384/108042.0, Timestamp: 10:01:31
+(Tracker 6 end) Bee ID=31 exit at frame 1384/108042.0, Timestamp: 10:01:31
+(Tracker 3 end) Bee ID=31 exit at frame 1385/108042.0, Timestamp: 10:01:31
+(Tracker 8 start) Bee ID=1 enter at frame 1387/108042.0, Timestamp: 10:01:31
+(Tracker 9 start) Bee ID=1 enter at frame 1388/108042.0, Timestamp: 10:01:31
+--- Logging session started at 2023-02-12 14:53:22.913774 for file C:\Users\grego\OneDrive\Pictures\Documents\Projects\BeeHotel\2022-05-14_10_00.mp4 ---
 MotionCapConfig({'VIDEO': 'C:\\Users\\grego\\OneDrive\\Pictures\\Documents\\Projects\\BeeHotel\\2022-05-14_10_00.mp4', 'TESSERACT': 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe', 'LOG': '10am_log_remove_wind.txt', 'TIMESTAMP': True, 'TIMESTAMP_RECT': (210, 20, 510, 50), 'CONTOUR_WINDOW_SIZE': 7, 'MOTION_THRESHOLD': 10.0})
 Coordinates of Tube Hives detected, along with associated Bee ID:
 Bee ID=0 Tube Hive Coords: [380 202]
@@ -127,7 +161,7 @@ Bee ID=36 Tube Hive Coords: [342 430]
 Bee ID=37 Tube Hive Coords: [200 368]
 
 
---- Logging session started at 2023-02-12 14:32:48.010486 for file C:\Users\grego\OneDrive\Pictures\Documents\Projects\BeeHotel\2022-05-14_10_00.mp4 ---
+--- Logging session started at 2023-02-12 14:54:01.291751 for file C:\Users\grego\OneDrive\Pictures\Documents\Projects\BeeHotel\2022-05-14_10_00.mp4 ---
 MotionCapConfig({'VIDEO': 'C:\\Users\\grego\\OneDrive\\Pictures\\Documents\\Projects\\BeeHotel\\2022-05-14_10_00.mp4', 'TESSERACT': 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe', 'LOG': '10am_log_remove_wind.txt', 'TIMESTAMP': True, 'TIMESTAMP_RECT': (210, 20, 510, 50), 'CONTOUR_WINDOW_SIZE': 7, 'MOTION_THRESHOLD': 10.0})
 Coordinates of Tube Hives detected, along with associated Bee ID:
 Bee ID=0 Tube Hive Coords: [380 202]
@@ -170,7 +204,8 @@ Bee ID=36 Tube Hive Coords: [342 430]
 Bee ID=37 Tube Hive Coords: [200 368]
 
 
---- Logging session started at 2023-02-12 14:32:55.462252 for file C:\Users\grego\OneDrive\Pictures\Documents\Projects\BeeHotel\2022-05-14_10_00.mp4 ---
+(Tracker 0 start) Bee ID=14 enter at frame 1377/108042.0, Timestamp: 10:01:31
+--- Logging session started at 2023-02-12 14:55:30.366762 for file C:\Users\grego\OneDrive\Pictures\Documents\Projects\BeeHotel\2022-05-14_10_00.mp4 ---
 MotionCapConfig({'VIDEO': 'C:\\Users\\grego\\OneDrive\\Pictures\\Documents\\Projects\\BeeHotel\\2022-05-14_10_00.mp4', 'TESSERACT': 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe', 'LOG': '10am_log_remove_wind.txt', 'TIMESTAMP': True, 'TIMESTAMP_RECT': (210, 20, 510, 50), 'CONTOUR_WINDOW_SIZE': 7, 'MOTION_THRESHOLD': 10.0})
 Coordinates of Tube Hives detected, along with associated Bee ID:
 Bee ID=0 Tube Hive Coords: [380 202]
@@ -213,9 +248,53 @@ Bee ID=36 Tube Hive Coords: [342 430]
 Bee ID=37 Tube Hive Coords: [200 368]
 
 
-(Tracker 28bd6160-8595-46e9-9ae0-dffcdc50b08c start) Bee ID=4 enter at frame 1379/108042.0, Timestamp: 10:01:31
-(Tracker cb73b741-cf69-47cf-b4c7-84e5b5923fcf start) Bee ID=14 enter at frame 1382/108042.0, Timestamp: 10:01:31
---- Logging session started at 2023-02-12 14:33:29.991462 for file C:\Users\grego\OneDrive\Pictures\Documents\Projects\BeeHotel\2022-05-14_10_00.mp4 ---
+(Tracker 0 start) Bee ID=14 enter at frame 1377/108042.0, Timestamp: 10:01:31
+(Tracker 1 start) Bee ID=14 enter at frame 1378/108042.0, Timestamp: 10:01:31
+(Tracker 0 end) Bee ID=31 exit at frame 1378/108042.0, Timestamp: 10:01:31
+(Tracker 2 start) Bee ID=4 enter at frame 1379/108042.0, Timestamp: 10:01:31
+(Tracker 3 start) Bee ID=16 enter at frame 1379/108042.0, Timestamp: 10:01:31
+(Tracker 4 start) Bee ID=14 enter at frame 1379/108042.0, Timestamp: 10:01:31
+(Tracker 5 start) Bee ID=14 enter at frame 1380/108042.0, Timestamp: 10:01:31
+(Tracker 1 end) Bee ID=31 exit at frame 1380/108042.0, Timestamp: 10:01:31
+(Tracker 4 end) Bee ID=31 exit at frame 1380/108042.0, Timestamp: 10:01:31
+(Tracker 2 end) Bee ID=31 exit at frame 1381/108042.0, Timestamp: 10:01:31
+(Tracker 6 start) Bee ID=14 enter at frame 1382/108042.0, Timestamp: 10:01:31
+(Tracker 5 end) Bee ID=31 exit at frame 1383/108042.0, Timestamp: 10:01:31
+(Tracker 7 start) Bee ID=14 enter at frame 1384/108042.0, Timestamp: 10:01:31
+(Tracker 6 end) Bee ID=31 exit at frame 1384/108042.0, Timestamp: 10:01:31
+(Tracker 3 end) Bee ID=31 exit at frame 1385/108042.0, Timestamp: 10:01:31
+(Tracker 8 start) Bee ID=1 enter at frame 1387/108042.0, Timestamp: 10:01:31
+(Tracker 9 start) Bee ID=1 enter at frame 1388/108042.0, Timestamp: 10:01:31
+(Tracker 10 start) Bee ID=10 enter at frame 3147/108042.0, Timestamp: 10:02:30
+(Tracker 11 start) Bee ID=13 enter at frame 3149/108042.0, Timestamp: 10:02:30
+(Tracker 12 start) Bee ID=10 enter at frame 3150/108042.0, Timestamp: 10:02:30
+(Tracker 10 end) Bee ID=31 exit at frame 3150/108042.0, Timestamp: 10:02:30
+(Tracker 13 start) Bee ID=5 enter at frame 3151/108042.0, Timestamp: 10:02:30
+(Tracker 11 end) Bee ID=31 exit at frame 3151/108042.0, Timestamp: 10:02:30
+(Tracker 14 start) Bee ID=5 enter at frame 3152/108042.0, Timestamp: 10:02:30
+(Tracker 15 start) Bee ID=13 enter at frame 3154/108042.0, Timestamp: 10:02:30
+(Tracker 16 start) Bee ID=5 enter at frame 3156/108042.0, Timestamp: 10:02:30
+(Tracker 13 end) Bee ID=31 exit at frame 3156/108042.0, Timestamp: 10:02:30
+(Tracker 14 end) Bee ID=31 exit at frame 3157/108042.0, Timestamp: 10:02:30
+(Tracker 17 start) Bee ID=5 enter at frame 3158/108042.0, Timestamp: 10:02:30
+(Tracker 17 end) Bee ID=31 exit at frame 3159/108042.0, Timestamp: 10:02:30
+(Tracker 18 start) Bee ID=5 enter at frame 3160/108042.0, Timestamp: 10:02:30
+(Tracker 18 end) Bee ID=31 exit at frame 3161/108042.0, Timestamp: 10:02:30
+(Tracker 19 start) Bee ID=5 enter at frame 3167/108042.0, Timestamp: 10:02:30
+(Tracker 19 end) Bee ID=31 exit at frame 3170/108042.0, Timestamp: 10:02:30
+(Tracker 20 start) Bee ID=5 enter at frame 3174/108042.0, Timestamp: 10:02:30
+(Tracker 20 end) Bee ID=31 exit at frame 3175/108042.0, Timestamp: 10:02:30
+(Tracker 21 start) Bee ID=10 enter at frame 3199/108042.0, Timestamp: 10:02:03
+(Tracker 22 start) Bee ID=10 enter at frame 3200/108042.0, Timestamp: 10:02:03
+(Tracker 23 start) Bee ID=10 enter at frame 3201/108042.0, Timestamp: 10:02:31
+(Tracker 22 end) Bee ID=31 exit at frame 3201/108042.0, Timestamp: 10:02:31
+(Tracker 24 start) Bee ID=10 enter at frame 3205/108042.0, Timestamp: 10:02:31
+(Tracker 21 end) Bee ID=31 exit at frame 3205/108042.0, Timestamp: 10:02:31
+(Tracker 25 start) Bee ID=10 enter at frame 3206/108042.0, Timestamp: 10:02:32
+(Tracker 26 start) Bee ID=10 enter at frame 3211/108042.0, Timestamp: 10:02:32
+(Tracker 24 end) Bee ID=31 exit at frame 3214/108042.0, Timestamp: 10:02:32
+(Tracker 25 end) Bee ID=31 exit at frame 3215/108042.0, Timestamp: 10:02:32
+--- Logging session started at 2023-02-12 14:58:13.763694 for file C:\Users\grego\OneDrive\Pictures\Documents\Projects\BeeHotel\2022-05-14_10_00.mp4 ---
 MotionCapConfig({'VIDEO': 'C:\\Users\\grego\\OneDrive\\Pictures\\Documents\\Projects\\BeeHotel\\2022-05-14_10_00.mp4', 'TESSERACT': 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe', 'LOG': '10am_log_remove_wind.txt', 'TIMESTAMP': True, 'TIMESTAMP_RECT': (210, 20, 510, 50), 'CONTOUR_WINDOW_SIZE': 7, 'MOTION_THRESHOLD': 10.0})
 Coordinates of Tube Hives detected, along with associated Bee ID:
 Bee ID=0 Tube Hive Coords: [380 202]
@@ -258,41 +337,3 @@ Bee ID=36 Tube Hive Coords: [342 430]
 Bee ID=37 Tube Hive Coords: [200 368]
 
 
-(Tracker 5a4e18c7-160e-4e4e-aab6-f0de7a1f4fd6 start) Bee ID=4 enter at frame 1379/108042.0, Timestamp: 10:01:31
-(Tracker 12f9098d-2ae2-424c-aa81-7716c7f2eb68 start) Bee ID=14 enter at frame 1382/108042.0, Timestamp: 10:01:31
-(Tracker 5a4e18c7-160e-4e4e-aab6-f0de7a1f4fd6 end) Bee ID=None exit at frame 1385/108042.0, Timestamp: 10:01:31
-(Tracker 12f9098d-2ae2-424c-aa81-7716c7f2eb68 end) Bee ID=None exit at frame 1386/108042.0, Timestamp: 10:01:31
-(Tracker 51ca089c-c91b-44d5-9cdc-f3645d8473e0 start) Bee ID=5 enter at frame 3151/108042.0, Timestamp: 10:02:30
-(Tracker 51ca089c-c91b-44d5-9cdc-f3645d8473e0 end) Bee ID=None exit at frame 3152/108042.0, Timestamp: 10:02:30
-(Tracker a1e5bb63-24f3-4519-a9c1-e2aa8c0d8183 start) Bee ID=13 enter at frame 3154/108042.0, Timestamp: 10:02:30
-(Tracker a1e5bb63-24f3-4519-a9c1-e2aa8c0d8183 end) Bee ID=None exit at frame 3155/108042.0, Timestamp: 10:02:30
-(Tracker 363accfa-1278-450b-b458-383525fa2e7f start) Bee ID=5 enter at frame 3158/108042.0, Timestamp: 10:02:30
-(Tracker 363accfa-1278-450b-b458-383525fa2e7f end) Bee ID=None exit at frame 3159/108042.0, Timestamp: 10:02:30
-(Tracker 559474fa-a69c-4151-8bcd-7f613ba71c18 start) Bee ID=5 enter at frame 3160/108042.0, Timestamp: 10:02:30
-(Tracker 559474fa-a69c-4151-8bcd-7f613ba71c18 end) Bee ID=None exit at frame 3161/108042.0, Timestamp: 10:02:30
-(Tracker 1998b3e9-bbcf-4905-bb8d-dd8cfbbcd616 start) Bee ID=5 enter at frame 3174/108042.0, Timestamp: 10:02:30
-(Tracker 1998b3e9-bbcf-4905-bb8d-dd8cfbbcd616 end) Bee ID=None exit at frame 3175/108042.0, Timestamp: 10:02:30
-(Tracker 86107b40-6975-4770-8b27-f12906c3ee63 start) Bee ID=10 enter at frame 3205/108042.0, Timestamp: 10:02:31
-(Tracker 4ae68370-442a-40cd-a4cf-3033b0be126c start) Bee ID=10 enter at frame 3206/108042.0, Timestamp: 10:02:32
-(Tracker cd09c179-2e2a-4c5d-98dd-15dadf1a35e0 start) Bee ID=10 enter at frame 3211/108042.0, Timestamp: 10:02:32
-(Tracker 86107b40-6975-4770-8b27-f12906c3ee63 end) Bee ID=None exit at frame 3211/108042.0, Timestamp: 10:02:32
-(Tracker 4ae68370-442a-40cd-a4cf-3033b0be126c end) Bee ID=None exit at frame 3212/108042.0, Timestamp: 10:02:32
-(Tracker cd09c179-2e2a-4c5d-98dd-15dadf1a35e0 end) Bee ID=None exit at frame 3213/108042.0, Timestamp: 10:02:32
-(Tracker 77cc4436-48c9-4df8-ae07-c8e11665225c start) Bee ID=17 enter at frame 3730/108042.0, Timestamp: 10:02:45
-(Tracker acddee64-a110-49a3-83db-8fb98e1e997c start) Bee ID=17 enter at frame 3732/108042.0, Timestamp: 10:02:45
-(Tracker 77cc4436-48c9-4df8-ae07-c8e11665225c end) Bee ID=None exit at frame 3732/108042.0, Timestamp: 10:02:45
-(Tracker ffc085e1-5dc9-484f-a1af-61a9a3849d4c start) Bee ID=15 enter at frame 3734/108042.0, Timestamp: 10:02:45
-(Tracker eeba16e2-9162-4595-a8bb-8bf899e4e9a7 start) Bee ID=4 enter at frame 3735/108042.0, Timestamp: 10:02:45
-(Tracker ffc085e1-5dc9-484f-a1af-61a9a3849d4c end) Bee ID=None exit at frame 3735/108042.0, Timestamp: 10:02:45
-(Tracker eeba16e2-9162-4595-a8bb-8bf899e4e9a7 end) Bee ID=None exit at frame 3737/108042.0, Timestamp: 10:02:45
-(Tracker c2b59550-bc75-42f5-abba-b03566638e48 start) Bee ID=14 enter at frame 3754/108042.0, Timestamp: 10:02:50
-(Tracker c2b59550-bc75-42f5-abba-b03566638e48 end) Bee ID=None exit at frame 3755/108042.0, Timestamp: 10:02:50
-(Tracker 701aba25-4e86-486b-88b6-00ba18507c6a start) Bee ID=14 enter at frame 3756/108042.0, Timestamp: 10:02:50
-(Tracker 701aba25-4e86-486b-88b6-00ba18507c6a end) Bee ID=None exit at frame 3759/108042.0, Timestamp: 10:02:50
-(Tracker 91d6d441-c573-4b9f-a925-a54beb834533 start) Bee ID=14 enter at frame 3760/108042.0, Timestamp: 10:02:50
-(Tracker 91d6d441-c573-4b9f-a925-a54beb834533 end) Bee ID=None exit at frame 3763/108042.0, Timestamp: 10:02:50
-(Tracker 22b478ae-8343-473f-a0a7-f4da7bfe48d2 start) Bee ID=14 enter at frame 3778/108042.0, Timestamp: 10:02:51
-(Tracker 386df4e2-8161-4fcf-983a-5819e3be31a9 start) Bee ID=14 enter at frame 3779/108042.0, Timestamp: 10:02:51
-(Tracker 8f62ca30-4c81-47bf-ab2e-9bb8806c6002 start) Bee ID=14 enter at frame 3780/108042.0, Timestamp: 10:02:51
-(Tracker 22b478ae-8343-473f-a0a7-f4da7bfe48d2 end) Bee ID=None exit at frame 3780/108042.0, Timestamp: 10:02:51
-(Tracker 386df4e2-8161-4fcf-983a-5819e3be31a9 end) Bee ID=None exit at frame 3781/108042.0, Timestamp: 10:02:51

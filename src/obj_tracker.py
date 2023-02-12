@@ -89,6 +89,8 @@ def obj_tracker(config: MotionCapConfig):
 
 
 class ObjTracker:
+    ID = 0
+
     def __init__(self, config: MotionCapConfig, init_bb, init_frame):
         self.config = config
         self.tracker = cv2.TrackerKCF_create()
@@ -97,7 +99,8 @@ class ObjTracker:
         self.object_exists = False
 
         # unique id for each tracker
-        self.id = uuid4()
+        self.id = ObjTracker.ID
+        ObjTracker.ID += 1
 
     def update(self, frame):
         # grab the new bounding box coordinates of the object
@@ -141,8 +144,9 @@ class Multitracker:
     def remove_tracker(self, tracker):
         self.trackers.remove(tracker)
 
-    def update(self, frame) -> List[ObjTracker]:
-        """Update all trackers and return the ones that have been dropped
+    def update(self, frame, detected_contours) -> List[ObjTracker]:
+        """Update all trackers and return the ones that have been dropped.
+            Gets dropped if the object was lost by the tracker, or if the object was lost by the contour detection.
 
         Args:
             frame (np.array): The frame to update the trackers with
@@ -153,9 +157,22 @@ class Multitracker:
         dropped_trackers = []
         for tracker in self.trackers:
             tracker.update(frame)
+
+            # we drop the tracker if there is not a corresponding contour
+            drop = False
+            for contour in detected_contours:
+                if tracker.overlaps_with_bb(contour["bb"]):
+                    self.trackers.remove(tracker)
+                    dropped_trackers.append(tracker)
+                    drop = True
+                    break
+            if drop:
+                continue
+
             if tracker.object_exists:
                 tracker.draw(frame)
             else:
+                # we also drop the tracker if the object was lost by the tracker
                 self.trackers.remove(tracker)
                 dropped_trackers.append(tracker)
         return dropped_trackers

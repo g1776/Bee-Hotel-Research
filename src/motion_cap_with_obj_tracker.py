@@ -114,7 +114,7 @@ def motion_detector(
                 obj_trackers.add_tracker(obj_tracker)
 
             # Then, update all trackers, and drop ones that have lost the bee. Log bee exits
-            dropped_trackers = obj_trackers.update(frame)
+            dropped_trackers = obj_trackers.update(frame, contours_to_track)
 
             # calculate the timestamp again if it was not calculated before and there are trackers to drop
             if timestamp is None and len(dropped_trackers) > 0:

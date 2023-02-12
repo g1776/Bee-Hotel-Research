@@ -257,7 +257,7 @@ def detect_contours_of_motion(preprocessed, previous_frame, config):
     previous_frame = preprocessed
 
     # 4. Dilute the image a bit to make differences more seeable; more suitable for contour detection
-    kernel = np.ones((5, 5))
+    kernel = np.ones((2, 2))
     diff_frame = cv2.dilate(diff_frame, kernel, 1)
 
     # 5. Only take different areas that are different enough (>motion_threshold / 255)
@@ -288,6 +288,7 @@ def filter_contours(contours, tube_hives, config) -> List[dict]:
         [
             {
                 "contour": np.ndarray,
+                "bb": (x, y, w, h),
                 "bee_id": 1,
                 "closest_tube": (x, y)
             },
@@ -317,6 +318,7 @@ def filter_contours(contours, tube_hives, config) -> List[dict]:
         filtered_contours.append(
             {
                 "contour": c,
+                "bb": cv2.boundingRect(c),
                 "bee_id": bee_id,
                 "closest_tube": closest_tube,
             }

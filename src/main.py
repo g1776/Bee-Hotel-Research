@@ -2,7 +2,6 @@ import argparse
 from src.motion_cap import motion_detector
 from colorama import init
 from termcolor import colored
-import pytesseract
 from dotenv import load_dotenv
 from src.config import MotionCapConfig
 

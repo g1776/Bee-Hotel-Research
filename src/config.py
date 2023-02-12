@@ -21,7 +21,7 @@ class MotionCapConfig:
     TIMESTAMP_RECT: Union[Tuple[float, float, float, float], None] = (210, 20, 510, 50)
 
     # Number of frames to detect motion between
-    DETECTION_RATE: int = 2
+    DETECTION_RATE: int = 1
 
     # Threshold for motion detection (higher threshold = more motion needed)
     MOTION_THRESHOLD: float = 10
@@ -48,7 +48,7 @@ class MotionCapConfig:
     BUFFER_FRAMES: int = 200
 
     # The maximum distance from any tube a contour can be without being dropped
-    MAX_DISTANCE_FROM_TUBE: int = 20
+    MAX_DISTANCE_FROM_TUBE: int = 10
 
     def __init__(self):
 

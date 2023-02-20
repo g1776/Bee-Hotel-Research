@@ -119,7 +119,9 @@ def draw_assigned_contour_on_frame(assigned_contour, frame) -> None:
         )
 
 
-def process_contours_window(contours_window: List[List[dict]], TOTAL_FRAMES, config) -> None:
+def process_contours_window(
+    contours_window: List[List[dict]], TOTAL_FRAMES, config, imshow_callback
+) -> None:
     """Process the contour window to determine when a bee leaves the frame.
         The idea here is that when a bee finally disappears, it is at the end of its
         flight/movement path and it has most disappeared from the frame, into the tube hive.
@@ -127,6 +129,9 @@ def process_contours_window(contours_window: List[List[dict]], TOTAL_FRAMES, con
 
     Args:
         contours_window (List[List[dict]]): The list of contours for each frame in the window.
+        TOTAL_FRAMES (int): The total number of frames in the video.
+        config (Config): The config object.
+        imshow_callback (function): The callback function to call to show the frame.
 
     Returns:
         None
@@ -204,7 +209,10 @@ def process_contours_window(contours_window: List[List[dict]], TOTAL_FRAMES, con
             log_it(config.LOG, log_msg)
 
     if config.SHOW:
-        cv2.imshow("🐝🏨 motion detector", frame_to_show)
+        if imshow_callback is not None:
+            imshow_callback(frame_to_show)
+        else:
+            cv2.imshow("🐝🏨 motion detector", frame_to_show)
 
 
 def preprocess_frame(frame, config):
@@ -238,12 +246,13 @@ def preprocess_frame(frame, config):
     return blurred
 
 
-def detect_contours_of_motion(preprocessed, previous_frame, config):
+def detect_contours_of_motion(preprocessed, previous_frame, base_frame, config):
     """Detect motion in a frame and return the contours that represent motion
 
     Args:
         preprocessed (np.ndarray): The preprocessed frame
         previous_frame (np.ndarray): The previous preprocessed frame
+        base_frame (np.ndarray): The base frame to subtract
         config (MotionCapConfig): The configuration object
 
     Returns:

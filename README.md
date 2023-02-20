@@ -6,37 +6,27 @@
 
 <img src="https://media2.giphy.com/media/U6YxrKZ84AfppW48r4/giphy.gif" width="100" height="100">
 
-## Usage
+### Usage
 
-The entrypoint to the tool is the `src.main.py` file. This file contains the driver code for motion capture. It is designed to be used as
-a commandline tool. A basic usage is:
-
-```bash
-  python -m src.main --video data/10pm.mp4 --log 10pm.txt -t --timestamp-rect 210, 20, 510, 50
-```
-
-Here the `--video` argument specifies the video file to be processed.
-The `--log` argument specifies the name of the log file to use.
-The `-t` argument specifies that there is a timestamp present in the video.
-The `--timestamp-rect` argument specifies the bounding box of the timestamp in the video. The bounding box is specified as `x1, y1, x2, y2`.
-
-For more information on the commandline arguments, run:
-
-```bash
-  python -m src.main --help
-```
-
-To quit the running program, press `q`, or kill the terminal running the program.
-
-### Alternative Usage: Config File (Recommended)
-
-The `src.main.py` file can also be used with a config file. This is the recommended usage. The config file is a .env file that contains values for the commandline arguments. The config file is specified with the `--config` argument. For example:
+The `src.main.py` file is used with a config file. This is the recommended usage. The config file is a .env file that contains values for the commandline arguments. The config file is specified with the `--config` argument. For example:
 
 ```bash
   python -m src.main --config .env
 ```
 
-The config file can be modified to change the commandline arguments. For example, to change the video file, change the `VIDEO` variable in the `.env` file.
+The config file can be modified to change the commandline arguments. For example, to change the video file, change the `VIDEO` variable in the `.env` file. To see the full list of available arguments and their default values, see the `src.config.py` file.
+
+To quit the running program, press `q`, or kill the terminal running the program.
+
+### Usage - GUI
+
+There is also a GUI to run the app in the web browser, built with `streamlit`. This option can be used by running:
+
+```bash
+  python -m src.app
+```
+
+In the GUI you will be prompted to enter the path to your .env file. This is the same as the `--config` argument. You can further modify the config values before running in the GUI. The GUI will then run the program with the specified arguments.
 
 ## Methods
 

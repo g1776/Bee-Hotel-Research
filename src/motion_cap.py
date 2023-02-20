@@ -9,12 +9,14 @@ from src.config import MotionCapConfig
 def motion_detector(
     config: MotionCapConfig,
     imshow_callback: Callable = None,
+    logging_callback: Callable = None,
 ):
     """Detect motion in a video
 
     Args:
         config (MotionCapConfig): Configuration object
         imshow_callback (callable, optional): Callback function to display the image. Defaults to None. (this is used for the streamlit app)
+        logging_callback (callable, optional): Callback function to display the log. Defaults to None. (this is used for the streamlit app)
     """
 
     # region init
@@ -25,7 +27,7 @@ def motion_detector(
     )
 
     if config.LOG:
-        init_logging_session(config.LOG, config.VIDEO)
+        init_logging_session(config.LOG, config.VIDEO, logging_callback)
 
     cap = cv2.VideoCapture(config.VIDEO)
 
@@ -36,7 +38,6 @@ def motion_detector(
     frame_count = 0
     previous_frame = None
     tube_hives = []
-    BASE_FRAME = None
 
     # contours window is a list of contours information for the last config.CONTOUR_WINDOW_SIZE+1 frames
     # each element is a list of the contour information that happened in the associated frame.
@@ -58,7 +59,9 @@ def motion_detector(
         # This will happen CONTOUR_WINDOW_SIZE frames after the last time a bee was detected, since it needs to compare this many frames
         # the logging itself, however, will have the correct frame number of when the bee was detected.
         # NOTE: This is where the logging and displaying of the image happens
-        process_contours_window(contours_window, TOTAL_FRAMES, config, imshow_callback)
+        process_contours_window(
+            contours_window, TOTAL_FRAMES, config, imshow_callback, logging_callback
+        )
 
         # read and preprocess the frame
         success, frame = cap.read()
@@ -68,7 +71,7 @@ def motion_detector(
 
         # Once we have reached the `BUFFER_FRAMES`th frame, we grab the tube hive coordinates and assign them to Bee IDs
         if frame_count == config.BUFFER_FRAMES:
-            tube_hives = get_tube_hives_coords(preprocessed, config.LOG)
+            tube_hives = get_tube_hives_coords(preprocessed, config.LOG, logging_callback)
             base_frame = preprocessed
 
         # determine motion on every `DETECTION_RATE-th frame

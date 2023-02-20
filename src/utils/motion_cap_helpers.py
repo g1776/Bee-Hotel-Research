@@ -33,7 +33,7 @@ def overlap(rec1, rec2) -> bool:
         return False
 
 
-def get_tube_hives_coords(frame, log=None) -> np.ndarray:
+def get_tube_hives_coords(frame, log=None, logging_callback=None) -> np.ndarray:
     """
     Get the coordinates of the tube hives in the frame. Returns a numpy array of the coordinates.
     """
@@ -58,7 +58,7 @@ def get_tube_hives_coords(frame, log=None) -> np.ndarray:
     tube_hives_msg += "\n\n"
     print(tube_hives_msg)
     if log:
-        log_it(log, tube_hives_msg)
+        log_it(log, tube_hives_msg, logging_callback)
 
     return tube_hives
 
@@ -120,7 +120,7 @@ def draw_assigned_contour_on_frame(assigned_contour, frame) -> None:
 
 
 def process_contours_window(
-    contours_window: List[List[dict]], TOTAL_FRAMES, config, imshow_callback
+    contours_window: List[List[dict]], TOTAL_FRAMES, config, imshow_callback, logging_callback
 ) -> None:
     """Process the contour window to determine when a bee leaves the frame.
         The idea here is that when a bee finally disappears, it is at the end of its
@@ -132,6 +132,7 @@ def process_contours_window(
         TOTAL_FRAMES (int): The total number of frames in the video.
         config (Config): The config object.
         imshow_callback (function): The callback function to call to show the frame.
+        logging_callback (function): The callback function to call to log the message.
 
     Returns:
         None
@@ -206,7 +207,7 @@ def process_contours_window(
         log_msg = generate_log_message(frame_count, TOTAL_FRAMES, timestamp_text, bee_id)
         print(log_msg)
         if config.LOG:
-            log_it(config.LOG, log_msg)
+            log_it(config.LOG, log_msg, logging_callback)
 
     if config.SHOW:
         if imshow_callback is not None:

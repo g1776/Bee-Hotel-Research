@@ -45,13 +45,19 @@ def main():
     start = st.button("Start")
 
     header = st.empty()
-    placeholder = st.empty()
+
+    # create side-by-side containers
+    col1, col2 = st.columns(2)
+    placeholder = col1.empty()
 
     def imshow_callback(image):
         placeholder.image(image)
 
+    def logging_callback(log):
+        col2.markdown(log)
+
     if start:
-        motion_detector(config, imshow_callback=imshow_callback)
+        motion_detector(config, imshow_callback=imshow_callback, logging_callback=logging_callback)
         header.markdown("## Motion Detection Feed")
 
 

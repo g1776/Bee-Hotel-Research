@@ -1,4 +1,3 @@
-from types import SimpleNamespace
 from typing import Tuple, Union
 import pytesseract
 import os
